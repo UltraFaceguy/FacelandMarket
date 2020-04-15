@@ -1,0 +1,16 @@
+name: FacelandMarket
+version: 1.0.0
+main: land.face.market.FacelandMarketPlugin
+author: Faceguy
+description: Make sum marksets dollah bilzlz
+depend:
+  - Facecore
+  - Strife
+  - Loot
+api-version: 1.15
+
+commands:
+  market:
+    usage: /<command>
+    aliases: [flm]
+    description: martz

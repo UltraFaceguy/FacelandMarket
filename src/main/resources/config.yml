@@ -1,0 +1,112 @@
+version: "0.0.1"
+
+aaaa: "yes"
+
+basic-categories:
+  CATEGORY_1:
+    name: "Equipment"
+    filterNamesA:
+      ALL: "meme"
+      FLAG_1: "meme"
+      FLAG_2: "meme"
+      FLAG_3: "meme"
+      FLAG_4: "meme"
+      FLAG_5: "meme"
+      FLAG_6: "meme"
+      FLAG_7: "meme"
+      FLAG_8: "meme"
+      FLAG_9: "meme"
+      FLAG_10: "meme"
+    filterNamesB:
+      ALL: "meme"
+      FLAG_1: "meme"
+      FLAG_2: "meme"
+      FLAG_3: "meme"
+      FLAG_4: "meme"
+      FLAG_5: "meme"
+      FLAG_6: "meme"
+      FLAG_7: "meme"
+      FLAG_8: "meme"
+      FLAG_9: "meme"
+      FLAG_10: "meme"
+    materials:
+    - IRON_HELMET
+    - IRON_CHESTPLATE
+    - IRON_LEGGINGS
+    - IRON_BOOTS
+    - DIAMOND_HELMET
+    - DIAMOND_CHESTPLATE
+    - DIAMOND_LEGGINGS
+    - DIAMOND_BOOTS
+    - GOLDEN_HELMET
+    - GOLDEN_CHESTPLATE
+    - GOLDEN_LEGGINGS
+    - GOLDEN_BOOTS
+    - LEATHER_HELMET
+    - LEATHER_CHESTPLATE
+    - LEATHER_LEGGINGS
+    - LEATHER_BOOTS
+    - CHAINMAIL_HELMET
+    - CHAINMAIL_CHESTPLATE
+    - CHAINMAIL_LEGGINGS
+    - CHAINMAIL_BOOTS
+  CATEGORY_2:
+    name: "Upgrade Items"
+    filterNamesA:
+      ALL: "meme"
+      FLAG_1: "meme"
+      FLAG_2: "meme"
+      FLAG_3: "meme"
+      FLAG_4: "meme"
+      FLAG_5: "meme"
+      FLAG_6: "meme"
+      FLAG_7: "meme"
+      FLAG_8: "meme"
+      FLAG_9: "meme"
+      FLAG_10: "meme"
+    filterNamesB:
+      ALL: "meme"
+    materials:
+    - EMERALD
+    - PAPER
+  CATEGORY_3:
+    name: "Consumables"
+    filterNamesA:
+      ALL: "meme"
+      FLAG_1: "meme"
+      FLAG_2: "meme"
+      FLAG_3: "meme"
+      FLAG_4: "meme"
+      FLAG_5: "meme"
+      FLAG_6: "meme"
+      FLAG_7: "meme"
+      FLAG_8: "meme"
+      FLAG_9: "meme"
+      FLAG_10: "meme"
+    filterNamesB:
+      ALL: "meme"
+    materials:
+    - APPLE
+  CATEGORY_4:
+    name: "Materials"
+    filterNamesA:
+      ALL: "meme"
+      FLAG_1: "meme"
+      FLAG_2: "meme"
+      FLAG_3: "meme"
+      FLAG_4: "meme"
+      FLAG_5: "meme"
+      FLAG_6: "meme"
+      FLAG_7: "meme"
+      FLAG_8: "meme"
+      FLAG_9: "meme"
+      FLAG_10: "meme"
+    filterNamesB:
+      ALL: "meme"
+    materials:
+    - IRON_HELMET
+    - IRON_CHESTPLATE
+    - IRON_LEGGINGS
+    - IRON_BOOTS
+  CATEGORY_5:
+    name: "Everything Else"
