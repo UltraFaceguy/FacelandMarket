@@ -12,11 +12,14 @@ public class Listing {
   private Category category;
   private FilterFlagA flagA;
   private FilterFlagB flagB;
-  private double price;
+  private int price;
   private Long listingTime;
   private String sellerName;
   private UUID sellerUuid;
   private UUID listingId;
+  private boolean sold;
+  private boolean expired;
+
   public ItemStack getItemStack() {
     return itemStack;
   }
@@ -49,11 +52,11 @@ public class Listing {
     this.flagB = flagB;
   }
 
-  public double getPrice() {
+  public int getPrice() {
     return price;
   }
 
-  public void setPrice(double price) {
+  public void setPrice(int price) {
     this.price = price;
   }
 
@@ -87,5 +90,21 @@ public class Listing {
 
   public void setListingId(UUID listingId) {
     this.listingId = listingId;
+  }
+
+  public boolean isSold() {
+    return sold;
+  }
+
+  public void setSold(boolean sold) {
+    this.sold = sold;
+  }
+
+  public boolean isExpired() {
+    return expired;
+  }
+
+  public void setExpired(boolean expired) {
+    this.expired = expired;
   }
 }

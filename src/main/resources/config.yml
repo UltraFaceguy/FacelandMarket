@@ -2,6 +2,32 @@ version: "0.0.1"
 
 aaaa: "yes"
 
+permissions:
+  marketupgrade.one:
+    slots: 3
+    title: "Locked!"
+    description:
+      - "Buy it nerd!"
+    command: "buy {player}"
+  marketupgrade.two:
+    slots: 3
+    title: "Locked!"
+    description:
+      - "Buy it nerd!"
+    command: "buy {player}"
+  marketupgrade.three:
+    slots: 3
+    title: "Locked!"
+    description:
+      - "Buy it nerd!"
+    command: "buy {player}"
+  marketupgrade.contributor:
+    slots: 4
+    title: "Locked!"
+    description:
+      - "Buy it nerd!"
+    command: "buy {player}"
+
 basic-categories:
   CATEGORY_1:
     name: "Equipment"

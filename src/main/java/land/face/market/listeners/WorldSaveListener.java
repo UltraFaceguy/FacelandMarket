@@ -18,38 +18,26 @@
  */
 package land.face.market.listeners;
 
-import land.face.market.menu.sell.SellMenu;
-import ninja.amp.ampmenus.menus.MenuHolder;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import land.face.market.FacelandMarketPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.world.WorldSaveEvent;
 
-public final class SellMenuListener implements Listener {
+public final class WorldSaveListener implements Listener {
 
-  @EventHandler(priority = EventPriority.LOW)
-  public void onClickEnchantMenu(InventoryClickEvent event) {
-    if (!(event.getInventory().getHolder() instanceof MenuHolder)) {
-      return;
+  private FacelandMarketPlugin plugin;
+
+  public WorldSaveListener(FacelandMarketPlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @EventHandler
+  public void onMainWorldSave(WorldSaveEvent event) {
+    // Save the market after the world with playerdata is saved for maximum chance of sync
+    if (event.getWorld() == Bukkit.getServer().getWorlds().get(0)) {
+      plugin.saveListings(true);
     }
-    if (!(((MenuHolder) event.getInventory().getHolder()).getMenu() instanceof SellMenu)) {
-      return;
-    }
-    if (event.getClickedInventory() == null) {
-      return;
-    }
-    if (!event.getClickedInventory().equals(event.getView().getBottomInventory())) {
-      return;
-    }
-    ItemStack stack = event.getCurrentItem();
-    if (stack == null || stack.getType() == Material.AIR) {
-      return;
-    }
-    SellMenu.getInstance().setSelectedItem((Player) event.getWhoClicked(), stack);
-    SellMenu.getInstance().update((Player) event.getWhoClicked());
   }
 
 }

@@ -48,8 +48,6 @@ public class PlayerMarketState {
     this.page = page;
   }
 
-  public static final Category[] CATEGORIES = Category.values();
-
   public enum Category {
     CATEGORY_1,
     CATEGORY_2,
@@ -57,8 +55,6 @@ public class PlayerMarketState {
     CATEGORY_4,
     CATEGORY_5
   }
-
-  public static final FilterFlagA[] FILTER_AS = FilterFlagA.values();
 
   public enum FilterFlagA {
     ALL,
@@ -73,8 +69,6 @@ public class PlayerMarketState {
     FLAG_9,
     FLAG_10
   }
-
-  public static final FilterFlagB[] FILTER_BS = FilterFlagB.values();
 
   public enum FilterFlagB {
     ALL,

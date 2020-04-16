@@ -1,6 +1,5 @@
 package land.face.market.managers;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
@@ -14,15 +13,16 @@ import land.face.market.data.CategoryContainer;
 import land.face.market.data.Listing;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.data.PlayerMarketState.Category;
-import land.face.market.data.PlayerMarketState.FilterFlagB;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
+import land.face.market.data.PlayerMarketState.FilterFlagB;
 import land.face.market.data.PlayerMarketState.SortStyle;
-import land.face.market.data.SoldListing;
 import land.face.market.data.comparators.LevelComparator;
 import land.face.market.data.comparators.PriceComparator;
 import land.face.market.data.comparators.RarityComparator;
 import land.face.market.data.comparators.TimeComparator;
 import land.face.market.events.ListItemEvent;
+import land.face.market.events.PurchaseItemEvent;
+import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.main.MarketMenu;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -37,7 +37,6 @@ public class MarketManager {
   private FacelandMarketPlugin plugin;
 
   private List<Listing> marketListing = new ArrayList<>();
-  private Map<UUID, List<SoldListing>> soldListings = new HashMap<>();
   private Map<UUID, PlayerMarketState> marketState = new HashMap<>();
 
   private Map<SortStyle, List<Listing>> sortCache = new HashMap<>();
@@ -47,8 +46,23 @@ public class MarketManager {
   private RarityComparator rarityComparator = new RarityComparator();
   private LevelComparator levelComparator = new LevelComparator();
 
+  public static final Category[] CATEGORIES = Category.values();
+  public static final FilterFlagA[] FILTER_AS = FilterFlagA.values();
+  public static final FilterFlagB[] FILTER_BS = FilterFlagB.values();
+
+  private static final long ONE_WEEK_MS = 604800000L;
+
   public MarketManager(FacelandMarketPlugin plugin) {
     this.plugin = plugin;
+  }
+
+  public List<Listing> getListings() {
+    return new ArrayList<>(marketListing);
+  }
+
+  public void loadListings(List<Listing> listings) {
+    marketListing.clear();
+    marketListing.addAll(listings);
   }
 
   public PlayerMarketState getPlayerState(Player player) {
@@ -64,37 +78,89 @@ public class MarketManager {
     return marketState.get(player.getUniqueId());
   }
 
-  public List<Listing> getListings() {
-    return marketListing;
+  public Listing getListing(UUID uuid) {
+    for (Listing l : marketListing) {
+      if (l.getListingId().equals(uuid)) {
+        return l;
+      }
+    }
+    return null;
   }
 
   public boolean hasEarnings(Player player) {
-    return soldListings.containsKey(player.getUniqueId())
-        && soldListings.get(player.getUniqueId()).size() > 0;
+    for (Listing l : marketListing) {
+      if (l.isSold() && l.getSellerUuid().equals(player.getUniqueId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public List<Listing> getListings(Player player) {
+    List<Listing> listings = new ArrayList<>();
+    for (Listing l : marketListing) {
+      if (l.getSellerUuid().equals(player.getUniqueId())) {
+        listings.add(l);
+      }
+    }
+    return listings;
+  }
+
+  public void expireOldListings() {
+    boolean update = false;
+    for (Listing l : marketListing) {
+      if (l.isSold() || l.isExpired()) {
+        continue;
+      }
+      if (l.getListingTime() < System.currentTimeMillis()) {
+        l.setExpired(true);
+        update = true;
+      }
+    }
+    if (update) {
+      updateMarket();
+    }
   }
 
   public void collectEarnings(Player player) {
-    double amount = 0;
-    if (!soldListings.containsKey(player.getUniqueId())) {
-      soldListings.put(player.getUniqueId(), new ArrayList<>());
+    for (Listing l : getListings(player)) {
+      collectEarnings(player, l);
     }
-    for (SoldListing sl : soldListings.get(player.getUniqueId())) {
-      MessageUtils.sendMessage(player,
-          "&2 - Sold " + ItemStackExtensionsKt.getDisplayName(sl.getItemStack())
-              + "&r&2 for &e" + (int) sl.getAmount() + " Bits&2!");
-      amount += sl.getAmount();
-    }
-    if (amount == 0) {
+  }
+
+  public void collectEarnings(Player player, Listing listing) {
+    listing = getListing(listing.getListingId());
+    if (listing == null || !listing.getSellerUuid().equals(player.getUniqueId())) {
       return;
     }
-    soldListings.get(player.getUniqueId()).clear();
-    MessageUtils.sendMessage(player, "&e  +" + (int) amount + " Bits!");
-    player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_CHAIN, 1, 2.0f);
-    MintPlugin.getInstance().getEconomy().depositPlayer(player, amount);
+    if (!listing.isSold()) {
+      return;
+    }
+    String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
+    MessageUtils.sendMessage(player, "&2 - Collected &f" + name + "&r&2!");
+    MessageUtils.sendMessage(player, "&e  +" + listing.getPrice() + " Bits!");
+    marketListing.remove(listing);
+    player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_CHAIN, 1, 1.5f);
+    MintPlugin.getInstance().getEconomy().depositPlayer(player, listing.getPrice());
+  }
+
+  public void reclaimItem(Player player, Listing listing) {
+    listing = getListing(listing.getListingId());
+    if (listing == null || !listing.getSellerUuid().equals(player.getUniqueId()) || listing
+        .isSold()) {
+      return;
+    }
+    marketListing.remove(listing);
+    player.getInventory().addItem(listing.getItemStack().clone());
+    if (!listing.isExpired()) {
+      updateMarket();
+    }
+    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1f);
   }
 
   public boolean buyItem(Player buyer, Listing listing) {
-    if (!marketListing.contains(listing)) {
+    listing = getListing(listing.getListingId());
+    if (listing == null || listing.isSold() || listing.isExpired()) {
       return false;
     }
     EconomyResponse response = MintPlugin.getInstance().getEconomy()
@@ -104,11 +170,21 @@ public class MarketManager {
       return false;
     }
     buyer.getInventory().addItem(listing.getItemStack().clone());
-    if (!soldListings.containsKey(listing.getSellerUuid())) {
-      soldListings.put(listing.getSellerUuid(), new ArrayList<>());
+    listing.setSold(true);
+
+    PurchaseItemEvent purchaseItemEvent = new PurchaseItemEvent(buyer, listing);
+    Bukkit.getPluginManager().callEvent(purchaseItemEvent);
+
+    for (Player p : Bukkit.getOnlinePlayers()) {
+      if (p.getUniqueId().equals(listing.getSellerUuid())) {
+        String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
+        MessageUtils.sendMessage(p, "&2 - Your market listing of&f " + name
+            + " &r&2was purchased! Visit a marketplace to collect your &eBits&2!");
+        ListingMenu.getInstance().update(p);
+        break;
+      }
     }
-    soldListings.get(listing.getSellerUuid()).add(SoldListing.fromListing(listing));
-    marketListing.remove(listing);
+
     updateMarket();
     return true;
   }
@@ -123,7 +199,7 @@ public class MarketManager {
     return count;
   }
 
-  public boolean listItem(Player seller, ItemStack stack, double price) {
+  public boolean listItem(Player seller, ItemStack stack, int price) {
     if (stack == null || stack.getType() == Material.AIR) {
       return false;
     }
@@ -145,7 +221,7 @@ public class MarketManager {
 
     Listing listing = new Listing();
     listing.setSellerName(seller.getName());
-    listing.setListingTime(System.currentTimeMillis());
+    listing.setListingTime(System.currentTimeMillis() + ONE_WEEK_MS);
     listing.setItemStack(stack.clone());
     listing.setPrice(price);
     listing.setCategory(category);
@@ -161,8 +237,8 @@ public class MarketManager {
       return false;
     }
     if (listing.getCategory() == null) {
-      MessageUtils.sendMessage(seller,
-          TextUtils.color("&eThis item is not configured to be listen in the market. Sorry!"));
+      MessageUtils
+          .sendMessage(seller, "&eThis item is not configured to be listed in the market. Sorry!");
       return false;
     }
 
@@ -171,13 +247,20 @@ public class MarketManager {
 
     String name = ItemStackExtensionsKt.getDisplayName(stack);
     MessageUtils.sendMessage(seller,
-        TextUtils.color("&2 - You listed &f" + name + " &r&2for &e" + (int) price + " Bits&2!"));
+        "&2 - You listed &f" + name + " &r&2for &e" + price + " Bits&2!");
     updateMarket();
     return true;
   }
 
+  public void reListItems() {
+    for (Listing listing : marketListing) {
+      ListItemEvent listItemEvent = new ListItemEvent(null, listing);
+      Bukkit.getPluginManager().callEvent(listItemEvent);
+    }
+  }
+
   private Category getFallbackCatergory(Material material) {
-    for (Category c : PlayerMarketState.CATEGORIES) {
+    for (Category c : CATEGORIES) {
       CategoryContainer container = plugin.getCategoryManager().getCategoryData().get(c);
       if (container.getFallbackMaterials().isEmpty()) {
         return c;
@@ -190,7 +273,8 @@ public class MarketManager {
 
   public List<Listing> getViewableListings(PlayerMarketState state) {
     List<Listing> listings = new ArrayList<>(sortCache.get(state.getSortStyle()));
-    listings.removeIf(l -> l.getCategory() != state.getSelectedCategory());
+    listings.removeIf(
+        l -> l.getCategory() != state.getSelectedCategory() || l.isSold() || l.isExpired());
     if (state.getFilterA() != FilterFlagA.ALL) {
       listings.removeIf(l -> l.getFlagA() != FilterFlagA.ALL && l.getFlagA() != state.getFilterA());
     }
@@ -205,6 +289,8 @@ public class MarketManager {
     List<Listing> listings;
 
     listings = new ArrayList<>(marketListing);
+    listings.removeIf(l -> l.isSold() || l.isExpired());
+
     listings.sort(timeComparator);
     sortCache.put(SortStyle.TIME_ASCENDING, listings);
     listings = new ArrayList<>(listings);

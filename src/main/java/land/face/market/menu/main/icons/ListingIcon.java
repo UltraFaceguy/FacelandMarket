@@ -19,6 +19,7 @@
 package land.face.market.menu.main.icons;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,7 +70,7 @@ public class ListingIcon extends MenuItem {
 
     Listing listing = resultListings.get(slotPlacement);
 
-    if (!marketManager.getListings().contains(listing)) {
+    if (marketManager.getListing(listing.getListingId()) == null) {
       icon = new ItemStack(Material.BARRIER);
       ItemStackExtensionsKt.setDisplayName(icon, "&eListing no longer exists!");
       return icon;
@@ -77,10 +78,12 @@ public class ListingIcon extends MenuItem {
 
     icon = listing.getItemStack().clone();
     List<String> displayLore = new ArrayList<>(ItemStackExtensionsKt.getLore(icon));
+    int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
+    String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
     displayLore.add("");
-    displayLore.add(ChatColor.GOLD + "Price: " + ChatColor.WHITE + listing.getPrice());
+    displayLore.add(ChatColor.GOLD + "Price: " + ChatColor.WHITE + listing.getPrice() + " Bits");
     displayLore.add(ChatColor.GOLD + "Seller: " + ChatColor.WHITE + listing.getSellerName());
-    displayLore.add(ChatColor.GOLD + "Expiry: " + ChatColor.WHITE + listing.getListingTime());
+    displayLore.add(ChatColor.GOLD + "Expiry: " + ChatColor.WHITE + format);
     icon.setLore(displayLore);
     return icon;
   }
@@ -101,7 +104,7 @@ public class ListingIcon extends MenuItem {
       event.setWillUpdate(true);
       return;
     }
-    if (!marketManager.getListings().contains(listing)) {
+    if (marketManager.getListing(listing.getListingId()) == null) {
       event.setWillUpdate(true);
       return;
     }

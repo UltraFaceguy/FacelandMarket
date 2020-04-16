@@ -19,8 +19,7 @@
 package land.face.market.menu.sell.icons;
 
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
-import land.face.market.managers.MarketManager;
-import land.face.market.menu.main.MarketMenu;
+import land.face.market.menu.listings.ListingMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
@@ -44,6 +43,7 @@ public class BackButton extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     event.getPlayer().closeInventory();
-    MarketMenu.getInstance().open(event.getPlayer());
+    ListingMenu.getInstance().open(event.getPlayer());
+    ListingMenu.getInstance().update(event.getPlayer());
   }
 }

@@ -48,9 +48,9 @@ public class FilterButtonB extends MenuItem {
     super("", new ItemStack(Material.HOPPER));
     this.marketManager = marketManager;
     this.categoryManager = categoryManager;
-    for (Category c : PlayerMarketState.CATEGORIES) {
+    for (Category c : MarketManager.CATEGORIES) {
       List<FilterFlagB> flags = new ArrayList<>();
-      for (FilterFlagB f : PlayerMarketState.FILTER_BS) {
+      for (FilterFlagB f : MarketManager.FILTER_BS) {
         CategoryContainer container = categoryManager.getCategoryData().get(c);
         if (container.getFilterNamesB().containsKey(f)) {
           flags.add(f);

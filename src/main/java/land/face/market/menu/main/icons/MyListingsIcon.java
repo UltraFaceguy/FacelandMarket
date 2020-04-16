@@ -23,7 +23,7 @@ import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.List;
 import land.face.market.managers.MarketManager;
-import land.face.market.menu.sell.SellMenu;
+import land.face.market.menu.listings.ListingMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
@@ -44,7 +44,7 @@ public class MyListingsIcon extends MenuItem {
     lore.add("&7Click here to list items");
     lore.add("&7on the market or to view");
     lore.add("&7your listed items");
-    ItemStackExtensionsKt.setLore(icon, lore);
+    ItemStackExtensionsKt.setLore(icon, TextUtils.color(lore));
   }
 
   @Override
@@ -58,6 +58,8 @@ public class MyListingsIcon extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     event.getPlayer().closeInventory();
-    SellMenu.getInstance().open(event.getPlayer());
+    ListingMenu.getInstance().getListingCache()
+        .put(event.getPlayer(), marketManager.getListings(event.getPlayer()));
+    ListingMenu.getInstance().open(event.getPlayer());
   }
 }

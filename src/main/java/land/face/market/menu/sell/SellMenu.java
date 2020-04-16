@@ -18,15 +18,22 @@
  */
 package land.face.market.menu.sell;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import land.face.market.FacelandMarketPlugin;
+import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.sell.icons.BackButton;
 import land.face.market.menu.sell.icons.PriceChangeButton;
-import land.face.market.menu.sell.icons.SellItem;
 import land.face.market.menu.sell.icons.SellButton;
+import land.face.market.menu.sell.icons.SellItem;
 import ninja.amp.ampmenus.menus.ItemMenu;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,21 +46,48 @@ public class SellMenu extends ItemMenu {
 
   private Map<Player, ItemStack> selectedItem = new WeakHashMap<>();
   private Map<Player, Integer> selectedPrice = new WeakHashMap<>();
+  private List<String> bannedStrings;
 
+  /*
+    00 01 02 03 04 05 06 07 08
+    09 10 11 12 13 14 15 16 17
+    18 19 20 21 22 23 24 25 26
+    27 28 29 30 31 32 33 34 35
+    36 37 38 39 40 41 42 43 44
+    45 46 47 48 49 50 51 52 53
+  */
   public SellMenu(FacelandMarketPlugin plugin) {
-    super("Sell Item", Size.fit(36), plugin);
+    super("Sell Item", Size.fit(45), plugin);
     this.plugin = plugin;
+    bannedStrings = plugin.getSettings().getStringList("config.disallowed-names-and-lores");
     sellItem = new SellItem();
-    setItem(11, sellItem);
-    setItem(20, new SellButton(plugin.getMarketManager()));
-    setItem(35, new BackButton());
+    setItem(13, sellItem);
+    setItem(15, new SellButton(plugin.getMarketManager()));
+    setItem(11, new BackButton());
 
-    setItem(14, new PriceChangeButton(Material.GOLD_NUGGET, 5));
-    setItem(23, new PriceChangeButton(Material.GOLD_NUGGET,-5));
-    setItem(15, new PriceChangeButton(Material.GOLD_INGOT,500));
-    setItem(24, new PriceChangeButton(Material.GOLD_INGOT,-500));
-    setItem(16, new PriceChangeButton(Material.GOLD_BLOCK,50000));
-    setItem(25, new PriceChangeButton(Material.GOLD_BLOCK,-50000));
+    setItem(29, new PriceChangeButton(Material.GOLD_NUGGET, 10));
+    setItem(30, new PriceChangeButton(Material.GOLD_INGOT, 100));
+    setItem(31, new PriceChangeButton(Material.GOLD_BLOCK, 1000));
+    setItem(32, new PriceChangeButton(Material.DIAMOND_BLOCK, 10000));
+    setItem(33, new PriceChangeButton(Material.EMERALD_BLOCK, 100000));
+    setItem(38, new PriceChangeButton(Material.GOLD_NUGGET, -10));
+    setItem(39, new PriceChangeButton(Material.GOLD_INGOT, -100));
+    setItem(40, new PriceChangeButton(Material.GOLD_BLOCK, -1000));
+    setItem(41, new PriceChangeButton(Material.DIAMOND_BLOCK, -10000));
+    setItem(42, new PriceChangeButton(Material.EMERALD_BLOCK, -100000));
+  }
+
+  @Override
+  public void open(Player player) {
+    if (plugin.getMarketManager().getListingCount(player) >= ListingMenu.getInstance()
+        .getSlots(player)) {
+      MessageUtils.sendMessage(player,
+          "&eYou do not have any market slots remaining! Cancel a listing or collect outstanding earnings to list another item.");
+      player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1, 1);
+      ListingMenu.getInstance().open(player);
+      return;
+    }
+    super.open(player);
   }
 
   public ItemStack getSelectedItem(Player player) {
@@ -64,8 +98,19 @@ public class SellMenu extends ItemMenu {
     return selectedItem.remove(player);
   }
 
-  public ItemStack setSelectedItem(Player player, ItemStack itemStack) {
-    return selectedItem.put(player, itemStack.clone());
+  public void setSelectedItem(Player player, ItemStack itemStack) {
+    List<String> strings = new ArrayList<>();
+    strings.add(ItemStackExtensionsKt.getDisplayName(itemStack));
+    strings.addAll(ItemStackExtensionsKt.getLore(itemStack));
+    for (String s : strings) {
+      for (String b : bannedStrings) {
+        if (b.contains(ChatColor.stripColor(s))) {
+          MessageUtils.sendMessage(player, "&eSorry! This item cannot be listed.");
+          return;
+        }
+      }
+    }
+    selectedItem.put(player, itemStack.clone());
   }
 
   public void setSelectedPrice(Player player, int amount) {
@@ -85,12 +130,3 @@ public class SellMenu extends ItemMenu {
   }
 
 }
-
-/*
-00 01 02 03 04 05 06 07 08
-09 10 11 12 13 14 15 16 17
-18 19 20 21 22 23 24 25 26
-27 28 29 30 31 32 33 34 35
-36 37 38 39 40 41 42 43 44
-45 46 47 48 49 50 51 52 53
-*/

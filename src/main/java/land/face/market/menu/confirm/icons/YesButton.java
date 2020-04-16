@@ -54,7 +54,7 @@ public class YesButton extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     Listing listing = PurchaseConfirmMenu.getInstance().getSelectedListing(event.getPlayer());
-    if (listing == null || !marketManager.getListings().contains(listing)) {
+    if (listing == null || marketManager.getListing(listing.getListingId()) == null) {
       MessageUtils.sendMessage(event.getPlayer(),
           TextUtils.color("&eSorry! This item no longer exists in the market."));
       return;
@@ -66,7 +66,7 @@ public class YesButton extends MenuItem {
       return;
     }
     boolean freeSpace = false;
-    for (ItemStack stack : event.getPlayer().getInventory().getContents()) {
+    for (ItemStack stack : event.getPlayer().getInventory().getStorageContents()) {
       if (stack == null || stack.getType() == Material.AIR) {
         freeSpace = true;
         break;
@@ -79,7 +79,12 @@ public class YesButton extends MenuItem {
       return;
     }
     String itemName = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
-    marketManager.buyItem(event.getPlayer(), listing);
+    boolean success = marketManager.buyItem(event.getPlayer(), listing);
+    if (!success) {
+      MessageUtils.sendMessage(event.getPlayer(), TextUtils
+          .color("&eSorry, this listing seems to have expired or been purchased!"));
+      return;
+    }
     MessageUtils.sendMessage(event.getPlayer(), TextUtils
         .color("&2 - You purchased &f" + itemName + "&r&2 for &e" + listing.getPrice() + " Bits&2!"));
     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0.5f);

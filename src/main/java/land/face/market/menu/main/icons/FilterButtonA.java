@@ -21,7 +21,6 @@ package land.face.market.menu.main.icons;
 import com.tealcube.minecraft.bukkit.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,9 +48,9 @@ public class FilterButtonA extends MenuItem {
     super("", new ItemStack(Material.HOPPER));
     this.marketManager = marketManager;
     this.categoryManager = categoryManager;
-    for (Category c : PlayerMarketState.CATEGORIES) {
+    for (Category c : MarketManager.CATEGORIES) {
       List<FilterFlagA> flags = new ArrayList<>();
-      for (FilterFlagA f : PlayerMarketState.FILTER_AS) {
+      for (FilterFlagA f : MarketManager.FILTER_AS) {
         CategoryContainer container = categoryManager.getCategoryData().get(c);
         if (container.getFilterNamesA().containsKey(f)) {
           flags.add(f);

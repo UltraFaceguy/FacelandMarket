@@ -22,6 +22,7 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.managers.MarketManager;
+import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
@@ -50,6 +51,14 @@ public class SellButton extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    if (marketManager.getListingCount(event.getPlayer()) >= ListingMenu.getInstance()
+        .getSlots(event.getPlayer())) {
+      MessageUtils.sendMessage(event.getPlayer(),
+          "&eYou do not have any market slots remaining! Cancel a listing or collect outstanding earnings to list another item.");
+      event.getPlayer()
+          .playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1, 1);
+      return;
+    }
     if (SellMenu.getInstance().getSelectedItem(event.getPlayer()) == null) {
       event.getPlayer()
           .playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1, 1);

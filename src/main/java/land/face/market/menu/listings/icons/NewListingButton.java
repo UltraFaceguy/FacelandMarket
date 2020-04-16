@@ -16,30 +16,33 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package land.face.market.menu;
+package land.face.market.menu.listings.icons;
 
+import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
+import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class BlankIcon extends MenuItem {
+public class NewListingButton extends MenuItem {
 
-  public BlankIcon() {
-    super("", new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+  public NewListingButton() {
+    super("", new ItemStack(Material.EMERALD));
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    return getIcon();
+    ItemStack icon = getIcon();
+    ItemStackExtensionsKt.setDisplayName(icon, "&aList A New Item");
+    return icon;
   }
 
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
-    event.setWillUpdate(false);
-    event.setWillClose(false);
-    event.setWillGoBack(false);
+    event.getPlayer().closeInventory();
+    SellMenu.getInstance().open(event.getPlayer());
   }
 }
