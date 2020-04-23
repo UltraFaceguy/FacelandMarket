@@ -36,6 +36,7 @@ import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 public class FilterButtonA extends MenuItem {
@@ -86,6 +87,10 @@ public class FilterButtonA extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    if (event.getClickType() == ClickType.DOUBLE_CLICK) {
+      event.setWillUpdate(false);
+      return;
+    }
     PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
 
     Iterator iterator = filterOrder.get(state.getSelectedCategory()).iterator();
