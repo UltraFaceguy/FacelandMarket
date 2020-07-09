@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.listings.icons;
 
+import com.tealcube.minecraft.bukkit.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -35,14 +36,13 @@ public class NewListingButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, "&aList A New Item");
+    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&aList A New Item"));
     return icon;
   }
 
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
-    event.getPlayer().closeInventory();
     SellMenu.getInstance().open(event.getPlayer());
   }
 }

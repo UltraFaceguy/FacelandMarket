@@ -55,5 +55,6 @@ public class SellItem extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    event.setWillUpdate(false);
   }
 }

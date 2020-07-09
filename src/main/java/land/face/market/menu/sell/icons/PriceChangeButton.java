@@ -18,6 +18,8 @@
  */
 package land.face.market.menu.sell.icons;
 
+import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
+
 import com.tealcube.minecraft.bukkit.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
@@ -27,35 +29,33 @@ import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 public class PriceChangeButton extends MenuItem {
 
   private int changeAmount;
   private ItemStack icon;
-  private String currentPrice;
+  private String currPriceString;
   private List<String> instructions;
 
   public PriceChangeButton(Material material, int changeAmount) {
     super("", new ItemStack(material));
     this.changeAmount = changeAmount;
     icon = new ItemStack(material);
-    if (changeAmount > 0) {
-      ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&ePrice &a+" + changeAmount));
-    } else {
-      ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&ePrice &c" + changeAmount));
-    }
-    currentPrice = TextUtils.color("&eCurrent Sale Price: ");
+    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&f&lClick To Chance Price!"));
+    currPriceString = TextUtils.color("&eCurrent Price: &f");
     List<String> lore = new ArrayList<>();
-    lore.add("&fClick to change price!");
-    lore.add("&7Shift+Click for 10x amount!");
+    lore.add("");
+    lore.add("&eLeft Click: &a+" + INT_FORMAT.format(changeAmount));
+    lore.add("&eRight Click: &c-" + INT_FORMAT.format(changeAmount));
     instructions = TextUtils.color(lore);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
     List<String> lore = new ArrayList<>();
-    lore.add(currentPrice + SellMenu.getInstance().getSelectedPrice(player));
+    lore.add(currPriceString + INT_FORMAT.format(SellMenu.getInstance().getSelectedPrice(player)) + " Bits");
     lore.addAll(instructions);
     ItemStack newIcon = icon.clone();
     ItemStackExtensionsKt.setLore(newIcon, lore);
@@ -65,10 +65,18 @@ public class PriceChangeButton extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
-    int newPrice = SellMenu.getInstance().getSelectedPrice(event.getPlayer()) + changeAmount *
-        (event.isShiftClick() ? 10 : 1);
+    int change;
+    if (event.getClickType() == ClickType.LEFT || event.getClickType() == ClickType.SHIFT_LEFT) {
+      change = changeAmount;
+    } else if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+      change = -changeAmount;
+    } else {
+      event.setWillUpdate(false);
+      return;
+    }
+    int newPrice = change + SellMenu.getInstance().getSelectedPrice(event.getPlayer());
     newPrice = Math.min(10000000, newPrice);
-    newPrice = Math.max(5, newPrice);
+    newPrice = Math.max(10, newPrice);
     SellMenu.getInstance().setSelectedPrice(event.getPlayer(), newPrice);
     event.setWillUpdate(true);
   }

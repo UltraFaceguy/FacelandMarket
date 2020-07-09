@@ -18,6 +18,7 @@
  */
 package land.face.market.menu;
 
+import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
@@ -26,13 +27,17 @@ import org.bukkit.inventory.ItemStack;
 
 public class BlankIcon extends MenuItem {
 
+  private ItemStack icon;
+
   public BlankIcon() {
-    super("", new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+    super(" ", new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+    icon = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+    ItemStackExtensionsKt.setDisplayName(icon, " ");
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    return getIcon();
+    return icon;
   }
 
   @Override

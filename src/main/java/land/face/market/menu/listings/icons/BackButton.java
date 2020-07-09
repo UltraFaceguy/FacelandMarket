@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.listings.icons;
 
+import com.tealcube.minecraft.bukkit.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.menu.main.MarketMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -35,7 +36,7 @@ public class BackButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, "&eReturn To Market");
+    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&eReturn To Market"));
     return icon;
   }
 

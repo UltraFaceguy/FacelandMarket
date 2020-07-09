@@ -26,22 +26,26 @@ import java.util.Iterator;
 import java.util.List;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.data.PlayerMarketState.SortStyle;
+import land.face.market.managers.CategoryAndFilterManager;
 import land.face.market.managers.MarketManager;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 public class SortButton extends MenuItem {
 
   private MarketManager marketManager;
+  private CategoryAndFilterManager categoryManager;
   private ItemStack icon;
 
-  public SortButton(MarketManager marketManager) {
+  public SortButton(MarketManager marketManager, CategoryAndFilterManager categoryManager) {
     super("", new ItemStack(Material.CARTOGRAPHY_TABLE));
     this.marketManager = marketManager;
+    this.categoryManager = categoryManager;
     icon = new ItemStack(Material.CARTOGRAPHY_TABLE);
     ItemStackExtensionsKt.setDisplayName(icon, ChatColor.WHITE + "Sort Order");
   }
@@ -52,9 +56,9 @@ public class SortButton extends MenuItem {
     PlayerMarketState state = marketManager.getPlayerState(player);
     for (SortStyle s : PlayerMarketState.SORT_STYLES) {
       if (state.getSortStyle() == s) {
-        lore.add("&f● " + s);
+        lore.add("&f● " + categoryManager.getSortName(s));
       } else {
-        lore.add("&7" + s);
+        lore.add("&7" + categoryManager.getSortName(s));
       }
     }
     ItemStack newIcon = icon.clone();
@@ -65,16 +69,20 @@ public class SortButton extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    if (event.getClickType() == ClickType.DOUBLE_CLICK) {
+      event.setWillUpdate(false);
+      return;
+    }
     PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
 
-    Iterator iterator = Arrays.asList(PlayerMarketState.SORT_STYLES).iterator();
+    Iterator<SortStyle> iterator = Arrays.asList(PlayerMarketState.SORT_STYLES).iterator();
     while (iterator.hasNext()) {
-      SortStyle next = (SortStyle) iterator.next();
+      SortStyle next = iterator.next();
       if (next == state.getSortStyle()) {
         if (iterator.hasNext()) {
-          state.setSortStyle((SortStyle) iterator.next());
+          state.setSortStyle(iterator.next());
         } else {
-          state.setSortStyle(SortStyle.TIME_ASCENDING);
+          state.setSortStyle(SortStyle.TIME_DESCENDING);
         }
       }
     }

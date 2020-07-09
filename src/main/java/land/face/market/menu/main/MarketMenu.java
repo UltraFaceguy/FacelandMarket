@@ -25,8 +25,8 @@ import land.face.market.menu.main.icons.CategoryIcon;
 import land.face.market.menu.main.icons.CollectIcon;
 import land.face.market.menu.main.icons.FilterButtonA;
 import land.face.market.menu.main.icons.FilterButtonB;
-import land.face.market.menu.main.icons.MyListingsIcon;
 import land.face.market.menu.main.icons.ListingIcon;
+import land.face.market.menu.main.icons.MyListingsIcon;
 import land.face.market.menu.main.icons.NextIcon;
 import land.face.market.menu.main.icons.PreviousIcon;
 import land.face.market.menu.main.icons.SortButton;
@@ -65,7 +65,7 @@ public class MarketMenu extends ItemMenu {
     setItem(48, new FilterButtonB(plugin.getMarketManager(), plugin.getCategoryManager()));
     setItem(49, new BlankIcon());
     setItem(50, new BlankIcon());
-    setItem(51, new SortButton(plugin.getMarketManager()));
+    setItem(51, new SortButton(plugin.getMarketManager(), plugin.getCategoryManager()));
     setItem(52, new BlankIcon());
     setItem(53, new NextIcon(plugin.getMarketManager()));
   }

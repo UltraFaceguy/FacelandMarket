@@ -43,7 +43,7 @@ public class SellButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
-    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color("&2Click to sell for &e" +
+    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color("&7Click to sell for &e" +
         SellMenu.getInstance().getSelectedPrice(player) + " Bits"));
     return stack;
   }

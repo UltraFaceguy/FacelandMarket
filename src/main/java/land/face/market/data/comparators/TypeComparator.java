@@ -3,9 +3,9 @@ package land.face.market.data.comparators;
 import java.util.Comparator;
 import land.face.market.data.Listing;
 
-public class LevelComparator implements Comparator<Listing> {
+public class TypeComparator implements Comparator<Listing> {
 
   public int compare(Listing listing1, Listing listing2) {
-    return Integer.compare(listing1.getFlagA().ordinal(), listing2.getFlagA().ordinal());
+    return listing1.getItemStack().getType().toString().compareTo(listing2.getItemStack().getType().toString());
   }
 }

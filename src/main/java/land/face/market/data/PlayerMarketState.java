@@ -87,13 +87,10 @@ public class PlayerMarketState {
   public static final SortStyle[] SORT_STYLES = SortStyle.values();
 
   public enum SortStyle {
-    TIME_ASCENDING,
     TIME_DESCENDING,
-    LEVEL_ASCENDING,
-    LEVEL_DESCENDING,
+    TIME_ASCENDING,
     PRICE_ASCENDING,
     PRICE_DESCENDING,
-    RARITY_ASCENDING,
-    RARITY_DESCENDING,
+    TYPE_ORDER
   }
 }

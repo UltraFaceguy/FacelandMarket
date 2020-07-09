@@ -18,6 +18,8 @@
  */
 package land.face.market.menu.confirm.icons;
 
+import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
+
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -45,8 +47,8 @@ public class YesButton extends MenuItem {
   public ItemStack getFinalIcon(Player player) {
     ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
     Listing listing = PurchaseConfirmMenu.getInstance().getSelectedListing(player);
-    ItemStackExtensionsKt.setDisplayName(stack,
-        TextUtils.color("&e&lClick To Purchase For &f&l" + listing.getPrice() + " Bits"));
+    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color(
+        "&e&lClick To Purchase For &f&l" + INT_FORMAT.format(listing.getPrice()) + " Bits"));
     return stack;
   }
 
@@ -65,28 +67,14 @@ public class YesButton extends MenuItem {
       event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 0.5f);
       return;
     }
-    boolean freeSpace = false;
-    for (ItemStack stack : event.getPlayer().getInventory().getStorageContents()) {
-      if (stack == null || stack.getType() == Material.AIR) {
-        freeSpace = true;
-        break;
-      }
-    }
-    if (!freeSpace) {
-      MessageUtils.sendMessage(event.getPlayer(),
-          TextUtils.color("&eYou don't have enough inventory space to buy this item!"));
-      event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 0.5f);
-      return;
-    }
     String itemName = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
     boolean success = marketManager.buyItem(event.getPlayer(), listing);
     if (!success) {
-      MessageUtils.sendMessage(event.getPlayer(), TextUtils
-          .color("&eSorry, this listing seems to have expired or been purchased!"));
+      event.setWillUpdate(false);
       return;
     }
-    MessageUtils.sendMessage(event.getPlayer(), TextUtils
-        .color("&2 - You purchased &f" + itemName + "&r&2 for &e" + listing.getPrice() + " Bits&2!"));
+    MessageUtils.sendMessage(event.getPlayer(), TextUtils.color(
+        "&2 - You purchased &f" + itemName + "&r&2 for &e" + INT_FORMAT.format(listing.getPrice()) + " Bits&2!"));
     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0.5f);
     event.setWillGoBack(true);
   }

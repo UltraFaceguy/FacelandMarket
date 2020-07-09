@@ -18,6 +18,8 @@
  */
 package land.face.market.menu.main.icons;
 
+import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
+
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -81,9 +83,13 @@ public class ListingIcon extends MenuItem {
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
     String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
     displayLore.add("");
-    displayLore.add(ChatColor.GOLD + "Price: " + ChatColor.WHITE + listing.getPrice() + " Bits");
+    displayLore.add(ChatColor.GOLD + "Price: " +
+        ChatColor.WHITE + INT_FORMAT.format(listing.getPrice()) + " Bits");
     displayLore.add(ChatColor.GOLD + "Seller: " + ChatColor.WHITE + listing.getSellerName());
     displayLore.add(ChatColor.GOLD + "Expiry: " + ChatColor.WHITE + format);
+    displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getCategory());
+    displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getFlagA());
+    displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getFlagB());
     icon.setLore(displayLore);
     return icon;
   }
@@ -94,7 +100,8 @@ public class ListingIcon extends MenuItem {
     PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
     List<Listing> resultListings = marketManager.getViewableListings(state);
 
-    int slotPlacement = (marketManager.getPlayerState(event.getPlayer()).getPage() - 1) * 36 + listingSlot;
+    int slotPlacement =
+        (marketManager.getPlayerState(event.getPlayer()).getPage() - 1) * 36 + listingSlot;
     if (resultListings.size() <= slotPlacement) {
       return;
     }
@@ -108,7 +115,6 @@ public class ListingIcon extends MenuItem {
       event.setWillUpdate(true);
       return;
     }
-    event.getPlayer().closeInventory();
     PurchaseConfirmMenu.getInstance().setSelectedListing(event.getPlayer(), listing);
     PurchaseConfirmMenu.getInstance().open(event.getPlayer());
   }

@@ -18,8 +18,8 @@
  */
 package land.face.market.menu.confirm.icons;
 
+import com.tealcube.minecraft.bukkit.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
-import land.face.market.managers.MarketManager;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
@@ -35,7 +35,7 @@ public class NoButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, "no thank u :)");
+    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&eno thank u :)"));
     return icon;
   }
 

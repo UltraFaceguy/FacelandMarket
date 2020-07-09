@@ -29,12 +29,12 @@ public class ListingManager {
   public int getMaxListings(Player player) {
     int amount = 14;
     for (String perm : permissionSlots.keySet()) {
-      System.out.println("checking perm " + perm + " - " + player.hasPermission(perm));
+      //System.out.println("checking perm " + perm + " - " + player.hasPermission(perm));
       if (!player.hasPermission(perm)) {
         amount -= permissionSlots.get(perm).getAmount();
       }
     }
-    System.out.println("checking perm " + amount);
+    //System.out.println("checking perm " + amount);
     return Math.max(amount, 0);
   }
 }

@@ -9,6 +9,7 @@ import land.face.market.data.CategoryContainer;
 import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
 import land.face.market.data.PlayerMarketState.FilterFlagB;
+import land.face.market.data.PlayerMarketState.SortStyle;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,9 +19,14 @@ public class CategoryAndFilterManager {
   private FacelandMarketPlugin plugin;
 
   private Map<Category, CategoryContainer> categoryData = new HashMap<>();
+  private Map<SortStyle, String> sortLang = new HashMap<>();
 
   public CategoryAndFilterManager(FacelandMarketPlugin plugin) {
     this.plugin = plugin;
+
+    for (SortStyle s : SortStyle.values()) {
+      sortLang.put(s, plugin.getSettings().getString("config.sort-names." + s, s.toString()));
+    }
 
     for (Category c : Category.values()) {
       CategoryContainer categoryContainer = new CategoryContainer();
@@ -58,6 +64,10 @@ public class CategoryAndFilterManager {
 
       categoryData.put(c, categoryContainer);
     }
+  }
+
+  public String getSortName(SortStyle sortStyle) {
+    return sortLang.get(sortStyle);
   }
 
   public Map<Category, CategoryContainer> getCategoryData() {

@@ -15,6 +15,7 @@ import land.face.market.data.Listing;
 import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
 import land.face.market.data.PlayerMarketState.FilterFlagB;
+import land.face.market.listeners.LoginListener;
 import land.face.market.listeners.MenuListener;
 import land.face.market.listeners.WorldSaveListener;
 import land.face.market.managers.CategoryAndFilterManager;
@@ -33,7 +34,7 @@ import se.ranzdo.bukkit.methodcommand.CommandHandler;
 public class FacelandMarketPlugin extends JavaPlugin {
 
   private static FacelandMarketPlugin instance;
-  public static final DecimalFormat INT_FORMAT = new DecimalFormat("#");
+  public static final DecimalFormat INT_FORMAT = new DecimalFormat("#,###,###,###,###");
   public static final DecimalFormat ONE_DECIMAL = new DecimalFormat("#.#");
 
   private MarketManager marketManager;
@@ -51,9 +52,11 @@ public class FacelandMarketPlugin extends JavaPlugin {
     return instance;
   }
 
-  public void onEnable() {
+  public FacelandMarketPlugin() {
     instance = this;
+  }
 
+  public void onEnable() {
     List<VersionedSmartYamlConfiguration> configurations = new ArrayList<>();
     configurations.add(configYAML = defaultSettingsLoad("config.yml"));
 
@@ -71,6 +74,7 @@ public class FacelandMarketPlugin extends JavaPlugin {
 
     Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
     Bukkit.getPluginManager().registerEvents(new WorldSaveListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new LoginListener(this), this);
 
     Bukkit.getScheduler().runTaskTimer(this,
         () -> marketManager.expireOldListings(),

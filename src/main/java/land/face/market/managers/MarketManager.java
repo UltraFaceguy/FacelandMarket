@@ -16,14 +16,14 @@ import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
 import land.face.market.data.PlayerMarketState.FilterFlagB;
 import land.face.market.data.PlayerMarketState.SortStyle;
-import land.face.market.data.comparators.LevelComparator;
 import land.face.market.data.comparators.PriceComparator;
-import land.face.market.data.comparators.RarityComparator;
 import land.face.market.data.comparators.TimeComparator;
+import land.face.market.data.comparators.TypeComparator;
 import land.face.market.events.ListItemEvent;
 import land.face.market.events.PurchaseItemEvent;
 import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.main.MarketMenu;
+import land.face.market.utils.InventoryUtil;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -43,8 +43,7 @@ public class MarketManager {
 
   private TimeComparator timeComparator = new TimeComparator();
   private PriceComparator priceComparator = new PriceComparator();
-  private RarityComparator rarityComparator = new RarityComparator();
-  private LevelComparator levelComparator = new LevelComparator();
+  private TypeComparator typeComparator = new TypeComparator();
 
   public static final Category[] CATEGORIES = Category.values();
   public static final FilterFlagA[] FILTER_AS = FilterFlagA.values();
@@ -150,8 +149,10 @@ public class MarketManager {
         .isSold()) {
       return;
     }
+    if (!InventoryUtil.addItems(player, true, listing.getItemStack().clone())) {
+      return;
+    }
     marketListing.remove(listing);
-    player.getInventory().addItem(listing.getItemStack().clone());
     if (!listing.isExpired()) {
       updateMarket();
     }
@@ -161,6 +162,10 @@ public class MarketManager {
   public boolean buyItem(Player buyer, Listing listing) {
     listing = getListing(listing.getListingId());
     if (listing == null || listing.isSold() || listing.isExpired()) {
+      MessageUtils.sendMessage(buyer, "&eSorry, this listing seems to have expired or been purchased!");
+      return false;
+    }
+    if (!InventoryUtil.addItems(buyer, true, listing.getItemStack().clone())) {
       return false;
     }
     EconomyResponse response = MintPlugin.getInstance().getEconomy()
@@ -169,7 +174,6 @@ public class MarketManager {
       MessageUtils.sendMessage(buyer, "ur broke");
       return false;
     }
-    buyer.getInventory().addItem(listing.getItemStack().clone());
     listing.setSold(true);
 
     PurchaseItemEvent purchaseItemEvent = new PurchaseItemEvent(buyer, listing);
@@ -233,9 +237,11 @@ public class MarketManager {
     ListItemEvent listItemEvent = new ListItemEvent(seller, listing);
 
     Bukkit.getPluginManager().callEvent(listItemEvent);
+
     if (listItemEvent.isCancelled()) {
       return false;
     }
+
     if (listing.getCategory() == null) {
       MessageUtils
           .sendMessage(seller, "&eThis item is not configured to be listed in the market. Sorry!");
@@ -273,14 +279,15 @@ public class MarketManager {
 
   public List<Listing> getViewableListings(PlayerMarketState state) {
     List<Listing> listings = new ArrayList<>(sortCache.get(state.getSortStyle()));
-    listings.removeIf(
-        l -> l.getCategory() != state.getSelectedCategory() || l.isSold() || l.isExpired());
+    listings.removeIf(l -> l.getCategory() != state.getSelectedCategory() || l.isSold() || l.isExpired());
+
     if (state.getFilterA() != FilterFlagA.ALL) {
-      listings.removeIf(l -> l.getFlagA() != FilterFlagA.ALL && l.getFlagA() != state.getFilterA());
+      listings.removeIf(l -> l.getFlagA() != state.getFilterA());
     }
     if (state.getFilterB() != FilterFlagB.ALL) {
-      listings.removeIf(l -> l.getFlagB() != FilterFlagB.ALL && l.getFlagB() != state.getFilterB());
+      listings.removeIf(l -> l.getFlagB() != state.getFilterB());
     }
+
     return listings;
   }
 
@@ -305,18 +312,8 @@ public class MarketManager {
     sortCache.put(SortStyle.PRICE_DESCENDING, listings);
 
     listings = new ArrayList<>(marketListing);
-    listings.sort(levelComparator);
-    sortCache.put(SortStyle.LEVEL_ASCENDING, listings);
-    listings = new ArrayList<>(listings);
-    Collections.reverse(listings);
-    sortCache.put(SortStyle.LEVEL_DESCENDING, listings);
-
-    listings = new ArrayList<>(marketListing);
-    listings.sort(rarityComparator);
-    sortCache.put(SortStyle.RARITY_ASCENDING, listings);
-    listings = new ArrayList<>(listings);
-    Collections.reverse(listings);
-    sortCache.put(SortStyle.RARITY_DESCENDING, listings);
+    listings.sort(typeComparator);
+    sortCache.put(SortStyle.TYPE_ORDER, listings);
 
     for (Player p : Bukkit.getOnlinePlayers()) {
       MarketMenu.getInstance().update(p);

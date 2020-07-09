@@ -18,6 +18,8 @@
  */
 package land.face.market.menu.listings.icons;
 
+import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
+
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -31,7 +33,9 @@ import land.face.market.menu.listings.ListingMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 public class ListingSlot extends MenuItem {
@@ -43,11 +47,14 @@ public class ListingSlot extends MenuItem {
   private Map<Player, Listing> listingMap = new WeakHashMap<>();
 
   private ItemStack noPerms;
+  private ItemStack itemSold;
+  private ItemStack itemExpired;
 
   public ListingSlot(MarketManager marketManager, int listingId) {
     super("", new ItemStack(Material.AIR));
     this.listingId = listingId;
     this.marketManager = marketManager;
+
     noPerms = new ItemStack(Material.ORANGE_STAINED_GLASS_PANE);
     ItemStackExtensionsKt.setDisplayName(noPerms, TextUtils.color("&7&l[ Locked ]"));
     List<String> lore = new ArrayList<>();
@@ -57,6 +64,15 @@ public class ListingSlot extends MenuItem {
     lore.add("&7who are &eContributors &7get four");
     lore.add("&7more slots!");
     ItemStackExtensionsKt.setLore(noPerms, TextUtils.color(lore));
+
+    itemSold = new ItemStack(Material.GOLD_BLOCK);
+    itemSold.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+    itemSold.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+    ItemStackExtensionsKt.setDisplayName(itemSold, TextUtils.color("&e&lITEM SOLD!"));
+
+    itemExpired = new ItemStack(Material.BARRIER);
+    itemExpired.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+    itemExpired.addItemFlags(ItemFlag.HIDE_ENCHANTS);
   }
 
   @Override
@@ -73,30 +89,37 @@ public class ListingSlot extends MenuItem {
       return getIcon();
     }
     Listing listing = listings.get(listingId - 1);
-    ItemStack newIcon = listing.getItemStack().clone();
+
     if (listing.isSold()) {
-      List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(listing.getItemStack()));
-      lore.add("");
-      lore.add(TextUtils.color("&e&lItem Sold! Click To Collect!"));
+      ItemStack newIcon = itemSold.clone();
+      List<String> lore = new ArrayList<>();
+      lore.add(TextUtils.color("&e&lClick To Collect " + listing.getPrice() + " Bits!"));
+      ItemStackExtensionsKt
+          .setDisplayName(newIcon, ItemStackExtensionsKt.getDisplayName(listing.getItemStack()));
       ItemStackExtensionsKt.setLore(newIcon, lore);
       listingMap.put(player, listing);
       listingState.put(player, ListingState.SOLD);
       return newIcon;
     }
     if (listing.isExpired()) {
+      ItemStack newIcon = itemExpired.clone();
       List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(listing.getItemStack()));
       lore.add("");
       lore.add(TextUtils.color("&c&lExpired! Click To Reclaim"));
+      ItemStackExtensionsKt
+          .setDisplayName(newIcon, ItemStackExtensionsKt.getDisplayName(listing.getItemStack()));
       ItemStackExtensionsKt.setLore(newIcon, lore);
       listingMap.put(player, listing);
       listingState.put(player, ListingState.EXPIRED);
       return newIcon;
     }
+    ItemStack newIcon = listing.getItemStack().clone();
     List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(listing.getItemStack()));
     lore.add("");
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
     String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
-    lore.add(TextUtils.color("&6Listing Price: &e" + listing.getPrice() + " Bits"));
+    lore.add(TextUtils.color(
+        "&6Listing Price: &e" + INT_FORMAT.format(listing.getPrice()) + " Bits"));
     lore.add(TextUtils.color("&6Remaining Time: &b" + format));
     lore.add(TextUtils.color("&c&lClick To Cancel Sale"));
     ItemStackExtensionsKt.setLore(newIcon, lore);

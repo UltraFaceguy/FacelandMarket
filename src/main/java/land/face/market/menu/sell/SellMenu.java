@@ -31,6 +31,7 @@ import land.face.market.menu.sell.icons.PriceChangeButton;
 import land.face.market.menu.sell.icons.SellButton;
 import land.face.market.menu.sell.icons.SellItem;
 import ninja.amp.ampmenus.menus.ItemMenu;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -57,7 +58,7 @@ public class SellMenu extends ItemMenu {
     45 46 47 48 49 50 51 52 53
   */
   public SellMenu(FacelandMarketPlugin plugin) {
-    super("Sell Item", Size.fit(45), plugin);
+    super("Sell Item", Size.fit(36), plugin);
     this.plugin = plugin;
     bannedStrings = plugin.getSettings().getStringList("config.disallowed-names-and-lores");
     sellItem = new SellItem();
@@ -65,16 +66,13 @@ public class SellMenu extends ItemMenu {
     setItem(15, new SellButton(plugin.getMarketManager()));
     setItem(11, new BackButton());
 
-    setItem(29, new PriceChangeButton(Material.GOLD_NUGGET, 10));
-    setItem(30, new PriceChangeButton(Material.GOLD_INGOT, 100));
-    setItem(31, new PriceChangeButton(Material.GOLD_BLOCK, 1000));
-    setItem(32, new PriceChangeButton(Material.DIAMOND_BLOCK, 10000));
-    setItem(33, new PriceChangeButton(Material.EMERALD_BLOCK, 100000));
-    setItem(38, new PriceChangeButton(Material.GOLD_NUGGET, -10));
-    setItem(39, new PriceChangeButton(Material.GOLD_INGOT, -100));
-    setItem(40, new PriceChangeButton(Material.GOLD_BLOCK, -1000));
-    setItem(41, new PriceChangeButton(Material.DIAMOND_BLOCK, -10000));
-    setItem(42, new PriceChangeButton(Material.EMERALD_BLOCK, -100000));
+    setItem(28, new PriceChangeButton(Material.GOLD_NUGGET, 1));
+    setItem(29, new PriceChangeButton(Material.GOLD_INGOT, 10));
+    setItem(30, new PriceChangeButton(Material.DIAMOND, 100));
+    setItem(31, new PriceChangeButton(Material.EMERALD, 1000));
+    setItem(32, new PriceChangeButton(Material.GOLD_BLOCK, 10000));
+    setItem(33, new PriceChangeButton(Material.DIAMOND_BLOCK, 100000));
+    setItem(34, new PriceChangeButton(Material.EMERALD_BLOCK, 1000000));
   }
 
   @Override
@@ -94,17 +92,20 @@ public class SellMenu extends ItemMenu {
     return selectedItem.getOrDefault(player, null);
   }
 
-  public ItemStack removeSelectedItem(Player player) {
-    return selectedItem.remove(player);
+  public void removeSelectedItem(Player player) {
+    selectedItem.remove(player);
   }
 
   public void setSelectedItem(Player player, ItemStack itemStack) {
     List<String> strings = new ArrayList<>();
     strings.add(ItemStackExtensionsKt.getDisplayName(itemStack));
     strings.addAll(ItemStackExtensionsKt.getLore(itemStack));
-    for (String s : strings) {
-      for (String b : bannedStrings) {
-        if (b.contains(ChatColor.stripColor(s))) {
+    for (String b : bannedStrings) {
+      for (String s : strings) {
+        if (StringUtils.isBlank(s)) {
+          continue;
+        }
+        if (ChatColor.stripColor(s).contains(b)) {
           MessageUtils.sendMessage(player, "&eSorry! This item cannot be listed.");
           return;
         }
@@ -118,7 +119,7 @@ public class SellMenu extends ItemMenu {
   }
 
   public int getSelectedPrice(Player player) {
-    return selectedPrice.getOrDefault(player, 5);
+    return selectedPrice.getOrDefault(player, 10);
   }
 
   public static SellMenu getInstance() {
