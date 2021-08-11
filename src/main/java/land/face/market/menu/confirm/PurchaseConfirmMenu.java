@@ -33,11 +33,11 @@ public class PurchaseConfirmMenu extends ItemMenu {
 
   private static PurchaseConfirmMenu instance;
 
-  private Map<Player, Listing> selectedListing = new WeakHashMap<>();
+  private final Map<Player, Listing> selectedListing = new WeakHashMap<>();
 
   public PurchaseConfirmMenu(FacelandMarketPlugin plugin) {
     super("Buy Item", Size.fit(36), plugin);
-    setItem(20, new YesButton(plugin.getMarketManager()));
+    setItem(20, new YesButton(plugin));
     setItem(13, new ListingSample());
     setItem(24, new NoButton());
     setParent(MarketMenu.getInstance());

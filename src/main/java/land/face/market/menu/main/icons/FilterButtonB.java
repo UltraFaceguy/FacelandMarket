@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +41,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class FilterButtonB extends MenuItem {
 
-  private MarketManager marketManager;
-  private CategoryAndFilterManager categoryManager;
-  private Map<Category, List<FilterFlagB>> filterOrder = new HashMap<>();
+  private final MarketManager marketManager;
+  private final CategoryAndFilterManager categoryManager;
+  private final Map<Category, List<FilterFlagB>> filterOrder = new HashMap<>();
 
   public FilterButtonB(MarketManager marketManager, CategoryAndFilterManager categoryManager) {
     super("", new ItemStack(Material.HOPPER));
@@ -79,7 +79,7 @@ public class FilterButtonB extends MenuItem {
     }
     ItemStack icon = getIcon().clone();
     ItemStackExtensionsKt.setDisplayName(icon, ChatColor.WHITE + "Filter");
-    ItemStackExtensionsKt.setLore(icon, TextUtils.color(lore));
+    icon.setLore(ListExtensionsKt.chatColorize(lore));
 
     return icon;
   }

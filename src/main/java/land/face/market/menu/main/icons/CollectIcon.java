@@ -18,7 +18,8 @@
  */
 package land.face.market.menu.main.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,20 +34,19 @@ import org.bukkit.inventory.ItemStack;
 
 public class CollectIcon extends MenuItem {
 
-  private MarketManager marketManager;
-
-  private ItemStack stack;
+  private final MarketManager marketManager;
+  private final ItemStack stack;
 
   public CollectIcon(MarketManager marketManager) {
     super("", new ItemStack(Material.GOLD_INGOT));
     this.marketManager = marketManager;
     stack = new ItemStack(Material.GOLD_INGOT);
-    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color("&6Collect Earnings"));
+    ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize("&6Collect Earnings"));
     List<String> lore = new ArrayList<>();
     lore.add("&7When you sell an item,");
     lore.add("&7you can click this icon");
     lore.add("&7to collect your Bits!");
-    ItemStackExtensionsKt.setLore(stack, TextUtils.color(lore));
+    stack.setLore(ListExtensionsKt.chatColorize(lore));
   }
 
   @Override
@@ -55,8 +55,8 @@ public class CollectIcon extends MenuItem {
     if (marketManager.hasEarnings(player)) {
       icon.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
       icon.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-      List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(icon));
-      lore.add(TextUtils.color("&a&lCLICK TO COLLECT!"));
+      List<String> lore = new ArrayList<>(icon.getLore() == null ? new ArrayList<>() : icon.getLore());
+      lore.add(StringExtensionsKt.chatColorize("&a&lCLICK TO COLLECT!"));
       icon.setLore(lore);
     }
     return icon;

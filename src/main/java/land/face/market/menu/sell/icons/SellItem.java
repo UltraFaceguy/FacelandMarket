@@ -18,7 +18,8 @@
  */
 package land.face.market.menu.sell.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +37,12 @@ public class SellItem extends MenuItem {
   public SellItem() {
     super("", new ItemStack(Material.AIR));
     icon = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
-    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&a&lClick An Item!"));
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&a&lClick An Item!"));
     List<String> lore = new ArrayList<>();
     lore.add("&7Click an item in your");
     lore.add("&7inventory to list it");
     lore.add("&7on the market!");
-    ItemStackExtensionsKt.setLore(icon, TextUtils.color(lore));
+    icon.setLore(ListExtensionsKt.chatColorize(lore));
   }
 
   @Override

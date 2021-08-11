@@ -18,10 +18,10 @@
  */
 package land.face.market.menu.sell.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
-import land.face.market.managers.MarketManager;
+import land.face.market.FacelandMarketPlugin;
 import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -33,25 +33,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class SellButton extends MenuItem {
 
-  private MarketManager marketManager;
+  private FacelandMarketPlugin plugin;
 
-  public SellButton(MarketManager marketManager) {
+  public SellButton(FacelandMarketPlugin plugin) {
     super("", new ItemStack(Material.HOPPER));
-    this.marketManager = marketManager;
+    this.plugin = plugin;
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
-    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color("&7Click to sell for &e" +
-        SellMenu.getInstance().getSelectedPrice(player) + " Bits"));
+    ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize("&7Click to sell for &e" +
+        plugin.getEconomy().format(SellMenu.getInstance().getSelectedPrice(player))));
     return stack;
   }
 
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
-    if (marketManager.getListingCount(event.getPlayer()) >= ListingMenu.getInstance()
+    if (plugin.getMarketManager().getListingCount(event.getPlayer()) >= ListingMenu.getInstance()
         .getSlots(event.getPlayer())) {
       MessageUtils.sendMessage(event.getPlayer(),
           "&eYou do not have any market slots remaining! Cancel a listing or collect outstanding earnings to list another item.");
@@ -65,7 +65,7 @@ public class SellButton extends MenuItem {
       MessageUtils.sendMessage(event.getPlayer(), "&eYou need to pick an item to sell!");
       return;
     }
-    boolean success = marketManager.listItem(event.getPlayer(),
+    boolean success = plugin.getMarketManager().listItem(event.getPlayer(),
         SellMenu.getInstance().getSelectedItem(event.getPlayer()),
         SellMenu.getInstance().getSelectedPrice(event.getPlayer()));
     if (success) {

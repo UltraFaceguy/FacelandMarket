@@ -18,9 +18,8 @@
  */
 package land.face.market.menu.main.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
-import javax.swing.Icon;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.managers.MarketManager;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -31,14 +30,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class PreviousIcon extends MenuItem {
 
-  private MarketManager marketManager;
-  private ItemStack icon;
+  private final MarketManager marketManager;
+  private final ItemStack icon;
 
   public PreviousIcon(MarketManager marketManager) {
     super("", new ItemStack(Material.ARROW));
     this.marketManager = marketManager;
     icon = new ItemStack(Material.ARROW);
-    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&e<< Previous Page"));
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&e<< Previous Page"));
   }
 
   @Override

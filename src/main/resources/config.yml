@@ -1,6 +1,7 @@
 version: "0.0.1"
 
 aaaa: "yes"
+debug-flags: false
 
 permissions:
   marketupgrade.one:

@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.sell.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.menu.listings.ListingMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -36,7 +36,7 @@ public class BackButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&eCancel"));
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eCancel"));
     return icon;
   }
 

@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +38,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class SortButton extends MenuItem {
 
-  private MarketManager marketManager;
-  private CategoryAndFilterManager categoryManager;
-  private ItemStack icon;
+  private final MarketManager marketManager;
+  private final CategoryAndFilterManager categoryManager;
+  private final ItemStack icon;
 
   public SortButton(MarketManager marketManager, CategoryAndFilterManager categoryManager) {
     super("", new ItemStack(Material.CARTOGRAPHY_TABLE));
@@ -62,7 +62,7 @@ public class SortButton extends MenuItem {
       }
     }
     ItemStack newIcon = icon.clone();
-    ItemStackExtensionsKt.setLore(newIcon, TextUtils.color(lore));
+    newIcon.setLore(ListExtensionsKt.chatColorize(lore));
     return newIcon;
   }
 

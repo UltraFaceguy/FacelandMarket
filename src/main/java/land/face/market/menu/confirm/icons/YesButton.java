@@ -18,13 +18,11 @@
  */
 package land.face.market.menu.confirm.icons;
 
-import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
-
-import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
+import land.face.market.FacelandMarketPlugin;
 import land.face.market.data.Listing;
-import land.face.market.managers.MarketManager;
 import land.face.market.menu.confirm.PurchaseConfirmMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
@@ -32,23 +30,22 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.nunnerycode.mint.MintPlugin;
 
 public class YesButton extends MenuItem {
 
-  private MarketManager marketManager;
+  private final FacelandMarketPlugin plugin;
 
-  public YesButton(MarketManager marketManager) {
+  public YesButton(FacelandMarketPlugin plugin) {
     super("", new ItemStack(Material.HOPPER));
-    this.marketManager = marketManager;
+    this.plugin = plugin;
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
     Listing listing = PurchaseConfirmMenu.getInstance().getSelectedListing(player);
-    ItemStackExtensionsKt.setDisplayName(stack, TextUtils.color(
-        "&e&lClick To Purchase For &f&l" + INT_FORMAT.format(listing.getPrice()) + " Bits"));
+    ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize(
+        "&a&lClick To Purchase For &e&l" + plugin.getEconomy().format(listing.getPrice())));
     return stack;
   }
 
@@ -56,25 +53,25 @@ public class YesButton extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     Listing listing = PurchaseConfirmMenu.getInstance().getSelectedListing(event.getPlayer());
-    if (listing == null || marketManager.getListing(listing.getListingId()) == null) {
+    if (listing == null || plugin.getMarketManager().getListing(listing.getListingId()) == null) {
       MessageUtils.sendMessage(event.getPlayer(),
-          TextUtils.color("&eSorry! This item no longer exists in the market."));
+          StringExtensionsKt.chatColorize("&eSorry! This item no longer exists in the market."));
       return;
     }
-    if (listing.getPrice() > MintPlugin.getInstance().getEconomy().getBalance(event.getPlayer())) {
+    if (listing.getPrice() > plugin.getEconomy().getBalance(event.getPlayer())) {
       MessageUtils.sendMessage(event.getPlayer(),
-          TextUtils.color("&cYou don't have enough Bits to buy this item!"));
+          StringExtensionsKt.chatColorize("&cYou don't have enough Bits to buy this item!"));
       event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 0.5f);
       return;
     }
     String itemName = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
-    boolean success = marketManager.buyItem(event.getPlayer(), listing);
+    boolean success = plugin.getMarketManager().buyItem(event.getPlayer(), listing);
     if (!success) {
       event.setWillUpdate(false);
       return;
     }
-    MessageUtils.sendMessage(event.getPlayer(), TextUtils.color(
-        "&2 - You purchased &f" + itemName + "&r&2 for &e" + INT_FORMAT.format(listing.getPrice()) + " Bits&2!"));
+    MessageUtils.sendMessage(event.getPlayer(), StringExtensionsKt.chatColorize(
+        "&2[Market] &aYou purchased &f" + itemName + "&r&a for &e" + plugin.getEconomy().format(listing.getPrice()) + "&a!"));
     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0.5f);
     event.setWillGoBack(true);
   }

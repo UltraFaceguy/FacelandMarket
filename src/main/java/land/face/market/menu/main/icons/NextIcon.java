@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.managers.MarketManager;
@@ -37,7 +37,7 @@ public class NextIcon extends MenuItem {
     super("", new ItemStack(Material.ARROW));
     this.marketManager = marketManager;
     icon = new ItemStack(Material.ARROW);
-    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&eNext Page >>"));
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eNext Page >>"));
   }
 
   @Override

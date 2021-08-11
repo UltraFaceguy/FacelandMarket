@@ -43,20 +43,20 @@ public class ListingMenu extends ItemMenu {
     super("Listings", Size.fit(35), plugin);
     this.plugin = plugin;
 
-    setItem(10, new ListingSlot(plugin.getMarketManager(), 1));
-    setItem(11, new ListingSlot(plugin.getMarketManager(), 2));
-    setItem(12, new ListingSlot(plugin.getMarketManager(), 3));
-    setItem(13, new ListingSlot(plugin.getMarketManager(), 4));
-    setItem(14, new ListingSlot(plugin.getMarketManager(), 5));
-    setItem(15, new ListingSlot(plugin.getMarketManager(), 6));
-    setItem(16, new ListingSlot(plugin.getMarketManager(), 7));
-    setItem(19, new ListingSlot(plugin.getMarketManager(), 8));
-    setItem(20, new ListingSlot(plugin.getMarketManager(), 9));
-    setItem(21, new ListingSlot(plugin.getMarketManager(), 10));
-    setItem(22, new ListingSlot(plugin.getMarketManager(), 11));
-    setItem(23, new ListingSlot(plugin.getMarketManager(), 12));
-    setItem(24, new ListingSlot(plugin.getMarketManager(), 13));
-    setItem(25, new ListingSlot(plugin.getMarketManager(), 14));
+    setItem(10, new ListingSlot(plugin, 1));
+    setItem(11, new ListingSlot(plugin, 2));
+    setItem(12, new ListingSlot(plugin, 3));
+    setItem(13, new ListingSlot(plugin, 4));
+    setItem(14, new ListingSlot(plugin, 5));
+    setItem(15, new ListingSlot(plugin, 6));
+    setItem(16, new ListingSlot(plugin, 7));
+    setItem(19, new ListingSlot(plugin, 8));
+    setItem(20, new ListingSlot(plugin, 9));
+    setItem(21, new ListingSlot(plugin, 10));
+    setItem(22, new ListingSlot(plugin, 11));
+    setItem(23, new ListingSlot(plugin, 12));
+    setItem(24, new ListingSlot(plugin, 13));
+    setItem(25, new ListingSlot(plugin, 14));
 
     setItem(30, new BackButton());
     setItem(32, new NewListingButton());

@@ -55,7 +55,7 @@ public class MarketMenu extends ItemMenu {
 
     int listingSlot = 0;
     for (int i = 9; i <= 44; i++) {
-      setItem(i, new ListingIcon(plugin.getMarketManager(), listingSlot));
+      setItem(i, new ListingIcon(plugin, listingSlot));
       listingSlot++;
     }
 
@@ -68,6 +68,8 @@ public class MarketMenu extends ItemMenu {
     setItem(51, new SortButton(plugin.getMarketManager(), plugin.getCategoryManager()));
     setItem(52, new BlankIcon());
     setItem(53, new NextIcon(plugin.getMarketManager()));
+
+    ListingIcon.DEBUG_FLAGS = FacelandMarketPlugin.getInstance().getConfiguration().getBoolean("debug-flags");
   }
 
   public static MarketMenu getInstance() {

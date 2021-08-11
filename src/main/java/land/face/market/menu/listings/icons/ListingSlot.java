@@ -18,17 +18,16 @@
  */
 package land.face.market.menu.listings.icons;
 
-import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
-
-import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import land.face.market.FacelandMarketPlugin;
 import land.face.market.data.Listing;
-import land.face.market.managers.MarketManager;
 import land.face.market.menu.listings.ListingMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
@@ -40,35 +39,35 @@ import org.bukkit.inventory.ItemStack;
 
 public class ListingSlot extends MenuItem {
 
-  private MarketManager marketManager;
-  private int listingId;
+  private final FacelandMarketPlugin plugin;
+  private final int listingId;
 
-  private Map<Player, ListingState> listingState = new WeakHashMap<>();
-  private Map<Player, Listing> listingMap = new WeakHashMap<>();
+  private final Map<Player, ListingState> listingState = new WeakHashMap<>();
+  private final Map<Player, Listing> listingMap = new WeakHashMap<>();
 
-  private ItemStack noPerms;
-  private ItemStack itemSold;
-  private ItemStack itemExpired;
+  private final ItemStack noPerms;
+  private final ItemStack itemSold;
+  private final ItemStack itemExpired;
 
-  public ListingSlot(MarketManager marketManager, int listingId) {
+  public ListingSlot(FacelandMarketPlugin plugin, int listingId) {
     super("", new ItemStack(Material.AIR));
     this.listingId = listingId;
-    this.marketManager = marketManager;
+    this.plugin = plugin;
 
     noPerms = new ItemStack(Material.ORANGE_STAINED_GLASS_PANE);
-    ItemStackExtensionsKt.setDisplayName(noPerms, TextUtils.color("&7&l[ Locked ]"));
+    ItemStackExtensionsKt.setDisplayName(noPerms, StringExtensionsKt.chatColorize("&7&l[ Locked ]"));
     List<String> lore = new ArrayList<>();
     lore.add("&7You can purchase extra market");
-    lore.add("&7slots for &dFaceGems &7or &eBits");
+    lore.add("&7slots for &d▼FaceGems &7or &e◎Bits");
     lore.add("&7by typing &b/buy&7! Also, players");
     lore.add("&7who are &eContributors &7get four");
     lore.add("&7more slots!");
-    ItemStackExtensionsKt.setLore(noPerms, TextUtils.color(lore));
+    noPerms.setLore(ListExtensionsKt.chatColorize(lore));
 
     itemSold = new ItemStack(Material.GOLD_BLOCK);
     itemSold.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
     itemSold.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    ItemStackExtensionsKt.setDisplayName(itemSold, TextUtils.color("&e&lITEM SOLD!"));
+    ItemStackExtensionsKt.setDisplayName(itemSold, StringExtensionsKt.chatColorize("&e&lITEM SOLD!"));
 
     itemExpired = new ItemStack(Material.BARRIER);
     itemExpired.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
@@ -93,36 +92,39 @@ public class ListingSlot extends MenuItem {
     if (listing.isSold()) {
       ItemStack newIcon = itemSold.clone();
       List<String> lore = new ArrayList<>();
-      lore.add(TextUtils.color("&e&lClick To Collect " + listing.getPrice() + " Bits!"));
-      ItemStackExtensionsKt
-          .setDisplayName(newIcon, ItemStackExtensionsKt.getDisplayName(listing.getItemStack()));
-      ItemStackExtensionsKt.setLore(newIcon, lore);
+      lore.add(StringExtensionsKt.chatColorize("&e&lClick To Collect " +
+          plugin.getEconomy().format(listing.getPrice())));
+      ItemStackExtensionsKt.setDisplayName(newIcon,
+          ItemStackExtensionsKt.getDisplayName(listing.getItemStack()));
+      newIcon.setLore(lore);
       listingMap.put(player, listing);
       listingState.put(player, ListingState.SOLD);
       return newIcon;
     }
     if (listing.isExpired()) {
       ItemStack newIcon = itemExpired.clone();
-      List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(listing.getItemStack()));
+      List<String> lore = new ArrayList<>(listing.getItemStack().getLore() == null ?
+          new ArrayList<>() : listing.getItemStack().getLore());
       lore.add("");
-      lore.add(TextUtils.color("&c&lExpired! Click To Reclaim"));
+      lore.add(StringExtensionsKt.chatColorize("&c&lExpired! Click To Reclaim"));
       ItemStackExtensionsKt
           .setDisplayName(newIcon, ItemStackExtensionsKt.getDisplayName(listing.getItemStack()));
-      ItemStackExtensionsKt.setLore(newIcon, lore);
+      newIcon.setLore(lore);
       listingMap.put(player, listing);
       listingState.put(player, ListingState.EXPIRED);
       return newIcon;
     }
     ItemStack newIcon = listing.getItemStack().clone();
-    List<String> lore = new ArrayList<>(ItemStackExtensionsKt.getLore(listing.getItemStack()));
+    List<String> lore = new ArrayList<>(listing.getItemStack().getLore() == null ?
+        new ArrayList<>() : listing.getItemStack().getLore());
     lore.add("");
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
     String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
-    lore.add(TextUtils.color(
-        "&6Listing Price: &e" + INT_FORMAT.format(listing.getPrice()) + " Bits"));
-    lore.add(TextUtils.color("&6Remaining Time: &b" + format));
-    lore.add(TextUtils.color("&c&lClick To Cancel Sale"));
-    ItemStackExtensionsKt.setLore(newIcon, lore);
+    lore.add(StringExtensionsKt.chatColorize(
+        "&6Listing Price: &e" + plugin.getEconomy().format(listing.getPrice())));
+    lore.add(StringExtensionsKt.chatColorize("&6Remaining Time: &b" + format));
+    lore.add(StringExtensionsKt.chatColorize("&c&lClick To Cancel Sale"));
+    newIcon.setLore(lore);
     listingMap.put(player, listing);
     listingState.put(player, ListingState.NORMAL);
     return newIcon;
@@ -132,19 +134,20 @@ public class ListingSlot extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     switch (listingState.get(event.getPlayer())) {
-      case SOLD:
-        marketManager.collectEarnings(event.getPlayer(), listingMap.get(event.getPlayer()));
+      case SOLD -> {
+        plugin.getMarketManager().collectEarnings(event.getPlayer(), listingMap.get(event.getPlayer()));
         event.setWillUpdate(true);
         return;
-      case EMPTY:
-      case LOCKED:
+      }
+      case EMPTY, LOCKED -> {
         event.setWillUpdate(false);
         return;
-      case NORMAL:
-      case EXPIRED:
-        marketManager.reclaimItem(event.getPlayer(), listingMap.get(event.getPlayer()));
+      }
+      case NORMAL, EXPIRED -> {
+        plugin.getMarketManager().reclaimItem(event.getPlayer(), listingMap.get(event.getPlayer()));
         event.setWillUpdate(true);
         return;
+      }
     }
     event.setWillUpdate(true);
   }

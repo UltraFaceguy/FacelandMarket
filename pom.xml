@@ -29,12 +29,12 @@
 
   <parent>
     <groupId>io.pixeloutlaw</groupId>
-    <artifactId>spigot-plugin-parent</artifactId>
-    <version>1.15.2.0</version>
+    <artifactId>generic-plugin-parent</artifactId>
+    <version>1.17.1.0</version>
   </parent>
 
   <artifactId>FacelandMarket</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
 
   <name>FacelandMarket</name>
@@ -43,12 +43,12 @@
 
   <repositories>
     <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
+      <id>space-faceland-maven</id>
+      <url>https://maven.pkg.jetbrains.space/faceland/p/fl/faceland-maven</url>
     </repository>
     <repository>
-      <id>spigot-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
     <repository>
       <id>Scarsz-Nexus</id>
@@ -58,14 +58,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.destroystokyo.paper</groupId>
-      <artifactId>paper-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.pixeloutlaw</groupId>
       <artifactId>facecore</artifactId>
-      <version>1.15.2.6</version>
+      <version>1.17.1.0</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.discordsrv</groupId>
@@ -74,9 +74,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>io.pixeloutlaw</groupId>
-      <artifactId>bullion</artifactId>
-      <version>2.1.7</version>
+      <groupId>com.github.MilkBowl</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.7</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -103,9 +103,16 @@
     </plugins>
   </build>
 
+  <distributionManagement>
+    <repository>
+      <id>space-faceland-maven</id>
+      <url>https://maven.pkg.jetbrains.space/faceland/p/fl/faceland-maven</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.javaVersion>1.8</project.build.javaVersion>
+    <project.build.javaVersion>16</project.build.javaVersion>
   </properties>
 
 </project>

@@ -20,10 +20,12 @@ package land.face.market.menu.sell.icons;
 
 import static land.face.market.FacelandMarketPlugin.INT_FORMAT;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
+import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.List;
+import land.face.market.FacelandMarketPlugin;
 import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
@@ -34,31 +36,34 @@ import org.bukkit.inventory.ItemStack;
 
 public class PriceChangeButton extends MenuItem {
 
-  private int changeAmount;
-  private ItemStack icon;
-  private String currPriceString;
-  private List<String> instructions;
+  private final FacelandMarketPlugin plugin;
 
-  public PriceChangeButton(Material material, int changeAmount) {
+  private final int changeAmount;
+  private final ItemStack icon;
+  private final String currPriceString;
+  private final List<String> instructions;
+
+  public PriceChangeButton(FacelandMarketPlugin plugin, Material material, int changeAmount) {
     super("", new ItemStack(material));
+    this.plugin = plugin;
     this.changeAmount = changeAmount;
     icon = new ItemStack(material);
-    ItemStackExtensionsKt.setDisplayName(icon, TextUtils.color("&f&lClick To Chance Price!"));
-    currPriceString = TextUtils.color("&eCurrent Price: &f");
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&6&n&lClick To Chance Price!"));
+    currPriceString = StringExtensionsKt.chatColorize("&f&lCurrent Price: &e");
     List<String> lore = new ArrayList<>();
     lore.add("");
-    lore.add("&eLeft Click: &a+" + INT_FORMAT.format(changeAmount));
-    lore.add("&eRight Click: &c-" + INT_FORMAT.format(changeAmount));
-    instructions = TextUtils.color(lore);
+    lore.add("&eLeft Click: &a+" + INT_FORMAT.format(changeAmount) + "◎");
+    lore.add("&eRight Click: &c-" + INT_FORMAT.format(changeAmount) + "◎");
+    instructions = ListExtensionsKt.chatColorize(lore);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
     List<String> lore = new ArrayList<>();
-    lore.add(currPriceString + INT_FORMAT.format(SellMenu.getInstance().getSelectedPrice(player)) + " Bits");
+    lore.add(currPriceString + plugin.getEconomy().format(SellMenu.getInstance().getSelectedPrice(player)));
     lore.addAll(instructions);
     ItemStack newIcon = icon.clone();
-    ItemStackExtensionsKt.setLore(newIcon, lore);
+    newIcon.setLore(lore);
     return newIcon;
   }
 

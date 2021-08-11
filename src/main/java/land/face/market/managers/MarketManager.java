@@ -1,6 +1,10 @@
 package land.face.market.managers;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.StringUtils;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
+import github.scarsz.discordsrv.util.DiscordUtil;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,24 +30,24 @@ import land.face.market.menu.main.MarketMenu;
 import land.face.market.utils.InventoryUtil;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.nunnerycode.mint.MintPlugin;
 
 public class MarketManager {
 
-  private FacelandMarketPlugin plugin;
+  private final FacelandMarketPlugin plugin;
 
-  private List<Listing> marketListing = new ArrayList<>();
-  private Map<UUID, PlayerMarketState> marketState = new HashMap<>();
+  private final List<Listing> marketListing = new ArrayList<>();
+  private final Map<UUID, PlayerMarketState> marketState = new HashMap<>();
 
-  private Map<SortStyle, List<Listing>> sortCache = new HashMap<>();
+  private final Map<SortStyle, List<Listing>> sortCache = new HashMap<>();
 
-  private TimeComparator timeComparator = new TimeComparator();
-  private PriceComparator priceComparator = new PriceComparator();
-  private TypeComparator typeComparator = new TypeComparator();
+  private final TimeComparator timeComparator = new TimeComparator();
+  private final PriceComparator priceComparator = new PriceComparator();
+  private final TypeComparator typeComparator = new TypeComparator();
 
   public static final Category[] CATEGORIES = Category.values();
   public static final FilterFlagA[] FILTER_AS = FilterFlagA.values();
@@ -113,6 +117,25 @@ public class MarketManager {
       }
       if (l.getListingTime() < System.currentTimeMillis()) {
         l.setExpired(true);
+
+        Player seller = null;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+          if (p.getUniqueId().equals(l.getSellerUuid())) {
+            seller = p;
+            break;
+          }
+        }
+
+        String name = ItemStackExtensionsKt.getDisplayName(l.getItemStack());
+        if (seller != null) {
+          MessageUtils.sendMessage(seller, "&2[Market] &aYour market listing for " + name +
+              " has expired! Visit the market to pick it up or re-list!");
+        } else {
+          sendDiscordMessage(l.getSellerUuid(),
+              "**Greetings gamer!** Sadly, nobody bought your market listing of **" +
+                  ChatColor.stripColor(name) +
+                  "** and the listing has expired. Login and visit the market to reclaim this item.");
+        }
         update = true;
       }
     }
@@ -136,11 +159,11 @@ public class MarketManager {
       return;
     }
     String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
-    MessageUtils.sendMessage(player, "&2 - Collected &f" + name + "&r&2!");
-    MessageUtils.sendMessage(player, "&e  +" + listing.getPrice() + " Bits!");
+    MessageUtils.sendMessage(player, "&2[Market] &aCollected &f" + name + "&r&a!");
+    MessageUtils.sendMessage(player, "&e  +" + plugin.getEconomy().format(listing.getPrice()));
     marketListing.remove(listing);
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_CHAIN, 1, 1.5f);
-    MintPlugin.getInstance().getEconomy().depositPlayer(player, listing.getPrice());
+    plugin.getEconomy().depositPlayer(player, listing.getPrice());
   }
 
   public void reclaimItem(Player player, Listing listing) {
@@ -162,14 +185,14 @@ public class MarketManager {
   public boolean buyItem(Player buyer, Listing listing) {
     listing = getListing(listing.getListingId());
     if (listing == null || listing.isSold() || listing.isExpired()) {
-      MessageUtils.sendMessage(buyer, "&eSorry, this listing seems to have expired or been purchased!");
+      MessageUtils
+          .sendMessage(buyer, "&eSorry, this listing seems to have expired or been purchased!");
       return false;
     }
     if (!InventoryUtil.addItems(buyer, true, listing.getItemStack().clone())) {
       return false;
     }
-    EconomyResponse response = MintPlugin.getInstance().getEconomy()
-        .withdrawPlayer(buyer, listing.getPrice());
+    EconomyResponse response = plugin.getEconomy().withdrawPlayer(buyer, listing.getPrice());
     if (!response.transactionSuccess()) {
       MessageUtils.sendMessage(buyer, "ur broke");
       return false;
@@ -179,14 +202,25 @@ public class MarketManager {
     PurchaseItemEvent purchaseItemEvent = new PurchaseItemEvent(buyer, listing);
     Bukkit.getPluginManager().callEvent(purchaseItemEvent);
 
+    Player seller = null;
     for (Player p : Bukkit.getOnlinePlayers()) {
       if (p.getUniqueId().equals(listing.getSellerUuid())) {
-        String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
-        MessageUtils.sendMessage(p, "&2 - Your market listing of&f " + name
-            + " &r&2was purchased! Visit a marketplace to collect your &eBits&2!");
-        ListingMenu.getInstance().update(p);
+        seller = p;
         break;
       }
+    }
+
+    if (seller != null) {
+      String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
+      MessageUtils.sendMessage(seller, "&2[Market] &aYour listing for&f " + name
+          + " &r&awas purchased! Visit a marketplace to collect your &eBits&a!");
+      ListingMenu.getInstance().update(seller);
+    } else {
+      sendDiscordMessage(listing.getSellerUuid(),
+          "**Greetings gamer!** Your market listing of **" + ChatColor.stripColor(
+              ItemStackExtensionsKt.getDisplayName(listing.getItemStack())
+                  + "** has been bought for **" + listing.getPrice()
+                  + " Bits**! Login to collect your earnings at the market when you feel like it :O"));
     }
 
     updateMarket();
@@ -253,7 +287,8 @@ public class MarketManager {
 
     String name = ItemStackExtensionsKt.getDisplayName(stack);
     MessageUtils.sendMessage(seller,
-        "&2 - You listed &f" + name + " &r&2for &e" + price + " Bits&2!");
+        "&2[Market] &aYou listed &f" + name + " &r&afor &e" + plugin.getEconomy().format(price)
+            + "&a!");
     updateMarket();
     return true;
   }
@@ -279,7 +314,8 @@ public class MarketManager {
 
   public List<Listing> getViewableListings(PlayerMarketState state) {
     List<Listing> listings = new ArrayList<>(sortCache.get(state.getSortStyle()));
-    listings.removeIf(l -> l.getCategory() != state.getSelectedCategory() || l.isSold() || l.isExpired());
+    listings.removeIf(
+        l -> l.getCategory() != state.getSelectedCategory() || l.isSold() || l.isExpired());
 
     if (state.getFilterA() != FilterFlagA.ALL) {
       listings.removeIf(l -> l.getFlagA() != state.getFilterA());
@@ -289,6 +325,18 @@ public class MarketManager {
     }
 
     return listings;
+  }
+
+  public void sendDiscordMessage(UUID uuid, String message) {
+    String id = DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(uuid);
+    if (StringUtils.isBlank(id)) {
+      return;
+    }
+    User user = DiscordUtil.getJda().getUserById(id);
+    if (user == null) {
+      return;
+    }
+    DiscordUtil.privateMessage(user, message);
   }
 
   public void updateMarket() {

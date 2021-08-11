@@ -1,5 +1,6 @@
 package land.face.market;
 
+import com.tealcube.minecraft.bukkit.shade.acf.PaperCommandManager;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.SmartYamlConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
@@ -10,7 +11,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import land.face.market.commands.BaseCommand;
+import land.face.market.commands.MarketCommand;
 import land.face.market.data.Listing;
 import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
@@ -25,11 +26,13 @@ import land.face.market.menu.confirm.PurchaseConfirmMenu;
 import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.main.MarketMenu;
 import land.face.market.menu.sell.SellMenu;
+import lombok.Getter;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import se.ranzdo.bukkit.methodcommand.CommandHandler;
 
 public class FacelandMarketPlugin extends JavaPlugin {
 
@@ -43,10 +46,10 @@ public class FacelandMarketPlugin extends JavaPlugin {
 
   private MasterConfiguration settings;
   private VersionedSmartYamlConfiguration configYAML;
-
   private SmartYamlConfiguration listingData;
 
-  private CommandHandler commandHandler;
+  @Getter
+  public Economy economy;
 
   public static FacelandMarketPlugin getInstance() {
     return instance;
@@ -87,10 +90,10 @@ public class FacelandMarketPlugin extends JavaPlugin {
     SellMenu.setInstance(new SellMenu(this));
     ListingMenu.setInstance(new ListingMenu(this));
 
-    commandHandler = new CommandHandler(this);
-    commandHandler.registerCommands(new BaseCommand(this));
-
     loadListings();
+
+    PaperCommandManager commandManager = new PaperCommandManager(this);
+    commandManager.registerCommand(new MarketCommand(this));
 
     Bukkit.getServer().getLogger().info("FacelandMarket Enabled!");
   }
@@ -125,6 +128,18 @@ public class FacelandMarketPlugin extends JavaPlugin {
   private VersionedSmartYamlConfiguration defaultSettingsLoad(String name) {
     return new VersionedSmartYamlConfiguration(new File(getDataFolder(), name),
         getResource(name), VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
+  }
+
+  private void setupEconomy() {
+    if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
+      return;
+    }
+    final RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>) getServer()
+        .getServicesManager().getRegistration((Class) Economy.class);
+    if (rsp == null) {
+      return;
+    }
+    economy = rsp.getProvider();
   }
 
   private void loadListings() {

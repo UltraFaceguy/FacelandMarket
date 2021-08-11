@@ -63,16 +63,16 @@ public class SellMenu extends ItemMenu {
     bannedStrings = plugin.getSettings().getStringList("config.disallowed-names-and-lores");
     sellItem = new SellItem();
     setItem(13, sellItem);
-    setItem(15, new SellButton(plugin.getMarketManager()));
+    setItem(15, new SellButton(plugin));
     setItem(11, new BackButton());
 
-    setItem(28, new PriceChangeButton(Material.GOLD_NUGGET, 1));
-    setItem(29, new PriceChangeButton(Material.GOLD_INGOT, 10));
-    setItem(30, new PriceChangeButton(Material.DIAMOND, 100));
-    setItem(31, new PriceChangeButton(Material.EMERALD, 1000));
-    setItem(32, new PriceChangeButton(Material.GOLD_BLOCK, 10000));
-    setItem(33, new PriceChangeButton(Material.DIAMOND_BLOCK, 100000));
-    setItem(34, new PriceChangeButton(Material.EMERALD_BLOCK, 1000000));
+    setItem(28, new PriceChangeButton(plugin, Material.GOLD_NUGGET, 1));
+    setItem(29, new PriceChangeButton(plugin, Material.GOLD_INGOT, 10));
+    setItem(30, new PriceChangeButton(plugin, Material.DIAMOND, 100));
+    setItem(31, new PriceChangeButton(plugin, Material.EMERALD, 1000));
+    setItem(32, new PriceChangeButton(plugin, Material.GOLD_BLOCK, 10000));
+    setItem(33, new PriceChangeButton(plugin, Material.DIAMOND_BLOCK, 100000));
+    setItem(34, new PriceChangeButton(plugin, Material.EMERALD_BLOCK, 1000000));
   }
 
   @Override
@@ -99,7 +99,7 @@ public class SellMenu extends ItemMenu {
   public void setSelectedItem(Player player, ItemStack itemStack) {
     List<String> strings = new ArrayList<>();
     strings.add(ItemStackExtensionsKt.getDisplayName(itemStack));
-    strings.addAll(ItemStackExtensionsKt.getLore(itemStack));
+    strings.addAll(itemStack.getLore() == null ? new ArrayList<>() : itemStack.getLore());
     for (String b : bannedStrings) {
       for (String s : strings) {
         if (StringUtils.isBlank(s)) {
