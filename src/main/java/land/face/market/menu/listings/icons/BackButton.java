@@ -18,25 +18,29 @@
  */
 package land.face.market.menu.listings.icons;
 
-import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
-import land.face.market.menu.main.MarketMenu;
+import land.face.market.FacelandMarketPlugin;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
+import ninja.amp.ampmenus.menus.ItemMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class BackButton extends MenuItem {
 
-  public BackButton() {
+  private final FacelandMarketPlugin plugin;
+
+  public BackButton(FacelandMarketPlugin plugin) {
     super("", new ItemStack(Material.ARROW));
+    this.plugin = plugin;
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eReturn To Market"));
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.YELLOW + "Return To Market");
     return icon;
   }
 
@@ -44,6 +48,6 @@ public class BackButton extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     event.getPlayer().closeInventory();
-    MarketMenu.getInstance().open(event.getPlayer());
+    plugin.getMarketManager().openMarket(event.getPlayer());
   }
 }

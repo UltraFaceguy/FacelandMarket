@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -33,18 +34,18 @@ import org.bukkit.inventory.ItemStack;
 
 public class MyListingsIcon extends MenuItem {
 
-  private MarketManager marketManager;
-  private ItemStack icon;
+  private final MarketManager marketManager;
+  private final ItemStack icon;
 
   public MyListingsIcon(MarketManager marketManager) {
     super("", new ItemStack(Material.BOOKSHELF));
     this.marketManager = marketManager;
     icon = new ItemStack(Material.BOOKSHELF);
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&2My Listings"));
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.GREEN + "My Listings");
     List<String> lore = new ArrayList<>();
-    lore.add("&7Click here to list items");
-    lore.add("&7on the market or to view");
-    lore.add("&7your listed items");
+    lore.add(FaceColor.LIGHT_GRAY + "Click here to list items");
+    lore.add(FaceColor.LIGHT_GRAY + "on the market or to view");
+    lore.add(FaceColor.LIGHT_GRAY + "your listed items");
     icon.setLore(ListExtensionsKt.chatColorize(lore));
   }
 

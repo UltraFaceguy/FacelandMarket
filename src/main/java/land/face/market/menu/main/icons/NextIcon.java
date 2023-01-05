@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.data.PlayerMarketState;
@@ -30,19 +31,27 @@ import org.bukkit.inventory.ItemStack;
 
 public class NextIcon extends MenuItem {
 
-  private MarketManager marketManager;
-  private ItemStack icon;
+  private final MarketManager marketManager;
+  private final ItemStack icon;
 
   public NextIcon(MarketManager marketManager) {
-    super("", new ItemStack(Material.ARROW));
+    super("", new ItemStack(Material.PAPER));
     this.marketManager = marketManager;
-    icon = new ItemStack(Material.ARROW);
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eNext Page >>"));
+    icon = new ItemStack(Material.PAPER);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack newIcon = icon;
+    ItemStack newIcon = icon.clone();
+    PlayerMarketState state = marketManager.getPlayerState(player);
+    int maxPages = 1 + marketManager.getViewableListings(state).size() / 36;
+    if (state.getPage() == maxPages) {
+      ItemStackExtensionsKt.setDisplayName(newIcon, FaceColor.LIGHT_GRAY + "Next Page >>");
+      ItemStackExtensionsKt.setCustomModelData(newIcon, 75);
+    } else {
+      ItemStackExtensionsKt.setDisplayName(newIcon, FaceColor.YELLOW + "Next Page >>");
+      ItemStackExtensionsKt.setCustomModelData(newIcon, 74);
+    }
     newIcon.setAmount(marketManager.getPlayerState(player).getPage() + 1);
     return newIcon;
   }

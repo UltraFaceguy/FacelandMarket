@@ -41,7 +41,6 @@ public class MarketManager {
   private final FacelandMarketPlugin plugin;
 
   private final List<Listing> marketListing = new ArrayList<>();
-  private final Map<UUID, PlayerMarketState> marketState = new HashMap<>();
 
   private final Map<SortStyle, List<Listing>> sortCache = new HashMap<>();
 
@@ -52,6 +51,8 @@ public class MarketManager {
   public static final Category[] CATEGORIES = Category.values();
   public static final FilterFlagA[] FILTER_AS = FilterFlagA.values();
   public static final FilterFlagB[] FILTER_BS = FilterFlagB.values();
+
+  private final Map<Player, MarketMenu> menuMap = new HashMap<>();
 
   private static final long ONE_WEEK_MS = 604800000L;
 
@@ -68,17 +69,22 @@ public class MarketManager {
     marketListing.addAll(listings);
   }
 
-  public PlayerMarketState getPlayerState(Player player) {
-    if (!marketState.containsKey(player.getUniqueId())) {
-      PlayerMarketState state = new PlayerMarketState();
-      state.setSortStyle(SortStyle.TIME_DESCENDING);
-      state.setSelectedCategory(Category.CATEGORY_1);
-      state.setPage(1);
-      state.setFilterA(FilterFlagA.ALL);
-      state.setFilterB(FilterFlagB.ALL);
-      marketState.put(player.getUniqueId(), state);
+  public void openMarket(Player player) {
+    if (!menuMap.containsKey(player)) {
+      menuMap.put(player, new MarketMenu(plugin));
     }
-    return marketState.get(player.getUniqueId());
+    menuMap.get(player).open(player);
+  }
+
+  public PlayerMarketState getPlayerState(Player player) {
+    if (!menuMap.containsKey(player)) {
+      menuMap.put(player, new MarketMenu(plugin));
+    }
+    return menuMap.get(player).getMarketState();
+  }
+
+  public void updateMarketTitle(Player player, String name) {
+    menuMap.get(player).setName(name);
   }
 
   public Listing getListing(UUID uuid) {
@@ -363,8 +369,10 @@ public class MarketManager {
     listings.sort(typeComparator);
     sortCache.put(SortStyle.TYPE_ORDER, listings);
 
-    for (Player p : Bukkit.getOnlinePlayers()) {
-      MarketMenu.getInstance().update(p);
+    for (Player p : menuMap.keySet()) {
+      if (p.isOnline()) {
+        menuMap.get(p).update(p);
+      }
     }
   }
 }

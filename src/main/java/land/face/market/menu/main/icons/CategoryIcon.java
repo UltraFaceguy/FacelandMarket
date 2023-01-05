@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.data.PlayerMarketState.Category;
@@ -36,23 +37,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class CategoryIcon extends MenuItem {
 
-  private MarketManager marketManager;
-  private Category category;
-  private ItemStack selected;
-  private ItemStack unselected;
+  private final MarketManager marketManager;
+  private final Category category;
+  private final ItemStack selected;
+  private final ItemStack unselected;
 
   public CategoryIcon(MarketManager marketManager, CategoryAndFilterManager categoryManager,
       Category category) {
-    super("", new ItemStack(Material.BOOK));
+    super("", new ItemStack(Material.PAPER));
     this.marketManager = marketManager;
     this.category = category;
+
     String name = categoryManager.getCategoryData().get(category).getName();
-    selected = new ItemStack(Material.WRITABLE_BOOK);
-    ItemStackExtensionsKt.setDisplayName(selected, ChatColor.AQUA + name);
-    selected.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-    selected.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    unselected = new ItemStack(Material.BOOK);
-    ItemStackExtensionsKt.setDisplayName(unselected, ChatColor.GRAY + name);
+    selected = new ItemStack(Material.BARRIER);
+    ItemStackExtensionsKt.setCustomModelData(selected, 50);
+    ItemStackExtensionsKt.setDisplayName(selected, FaceColor.YELLOW + name);
+
+    unselected = new ItemStack(Material.BARRIER);
+    ItemStackExtensionsKt.setCustomModelData(unselected, 50);
+    ItemStackExtensionsKt.setDisplayName(unselected, FaceColor.GRAY + name);
   }
 
   @Override
@@ -65,12 +68,20 @@ public class CategoryIcon extends MenuItem {
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
     PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
+    event.setWillUpdate(false);
+    switch (category) {
+      case CATEGORY_1 -> marketManager.updateMarketTitle(event.getPlayer(), ChatColor.WHITE + "\uF808鎮");
+      case CATEGORY_2 -> marketManager.updateMarketTitle(event.getPlayer(), ChatColor.WHITE + "\uF808镇");
+      case CATEGORY_3 -> marketManager.updateMarketTitle(event.getPlayer(), ChatColor.WHITE + "\uF808销");
+      case CATEGORY_4 -> marketManager.updateMarketTitle(event.getPlayer(), ChatColor.WHITE + "\uF808闤");
+      case CATEGORY_5 -> marketManager.updateMarketTitle(event.getPlayer(), ChatColor.WHITE + "\uF808阛");
+    }
     if (state.getSelectedCategory() != category) {
       state.setFilterA(FilterFlagA.ALL);
       state.setFilterB(FilterFlagB.ALL);
       state.setPage(1);
       state.setSelectedCategory(category);
-      event.setWillUpdate(true);
+      marketManager.openMarket(event.getPlayer());
     }
   }
 }

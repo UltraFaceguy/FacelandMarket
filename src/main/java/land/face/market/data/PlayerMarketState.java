@@ -67,7 +67,9 @@ public class PlayerMarketState {
     FLAG_7,
     FLAG_8,
     FLAG_9,
-    FLAG_10
+    FLAG_10,
+    FLAG_11,
+    FLAG_12
   }
 
   public enum FilterFlagB {
@@ -81,7 +83,9 @@ public class PlayerMarketState {
     FLAG_7,
     FLAG_8,
     FLAG_9,
-    FLAG_10
+    FLAG_10,
+    FLAG_11,
+    FLAG_12
   }
 
   public static final SortStyle[] SORT_STYLES = SortStyle.values();

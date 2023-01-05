@@ -73,6 +73,6 @@ public class YesButton extends MenuItem {
     MessageUtils.sendMessage(event.getPlayer(), StringExtensionsKt.chatColorize(
         "&2[Market] &aYou purchased &f" + itemName + "&r&a for &e" + plugin.getEconomy().format(listing.getPrice()) + "&a!"));
     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0.5f);
-    event.setWillGoBack(true);
+    plugin.getMarketManager().openMarket(event.getPlayer());
   }
 }

@@ -25,7 +25,6 @@ import land.face.market.data.Listing;
 import land.face.market.menu.confirm.icons.ListingSample;
 import land.face.market.menu.confirm.icons.NoButton;
 import land.face.market.menu.confirm.icons.YesButton;
-import land.face.market.menu.main.MarketMenu;
 import ninja.amp.ampmenus.menus.ItemMenu;
 import org.bukkit.entity.Player;
 
@@ -39,8 +38,7 @@ public class PurchaseConfirmMenu extends ItemMenu {
     super("Buy Item", Size.fit(36), plugin);
     setItem(20, new YesButton(plugin));
     setItem(13, new ListingSample());
-    setItem(24, new NoButton());
-    setParent(MarketMenu.getInstance());
+    setItem(24, new NoButton(plugin));
   }
 
   public void setSelectedListing(Player player, Listing listing) {

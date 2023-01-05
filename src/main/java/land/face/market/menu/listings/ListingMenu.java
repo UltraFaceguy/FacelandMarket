@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import land.face.market.FacelandMarketPlugin;
 import land.face.market.data.Listing;
-import land.face.market.menu.BlankIcon;
 import land.face.market.menu.listings.icons.BackButton;
 import land.face.market.menu.listings.icons.ListingSlot;
 import land.face.market.menu.listings.icons.NewListingButton;
@@ -34,10 +33,10 @@ public class ListingMenu extends ItemMenu {
 
   private static ListingMenu instance;
 
-  private FacelandMarketPlugin plugin;
+  private final FacelandMarketPlugin plugin;
 
-  private Map<Player, List<Listing>> listingCache = new WeakHashMap<>();
-  private Map<Player, Integer> slots = new WeakHashMap<>();
+  private final Map<Player, List<Listing>> listingCache = new WeakHashMap<>();
+  private final Map<Player, Integer> slots = new WeakHashMap<>();
 
   public ListingMenu(FacelandMarketPlugin plugin) {
     super("Listings", Size.fit(35), plugin);
@@ -58,10 +57,8 @@ public class ListingMenu extends ItemMenu {
     setItem(24, new ListingSlot(plugin, 13));
     setItem(25, new ListingSlot(plugin, 14));
 
-    setItem(30, new BackButton());
+    setItem(30, new BackButton(plugin));
     setItem(32, new NewListingButton());
-
-    fillEmptySlots(new BlankIcon());
   }
 
   @Override

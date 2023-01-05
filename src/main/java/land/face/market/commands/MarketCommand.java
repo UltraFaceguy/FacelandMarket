@@ -43,7 +43,7 @@ public class MarketCommand extends BaseCommand {
   @CommandPermission("market.open")
   public void startCommand(CommandSender sender, OnlinePlayer player) {
     plugin.getMarketManager().updateMarket();
-    MarketMenu.getInstance().open(player.getPlayer());
+    plugin.getMarketManager().openMarket(player.getPlayer());
   }
 
   @Subcommand("sell")

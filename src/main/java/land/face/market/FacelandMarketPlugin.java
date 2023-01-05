@@ -24,7 +24,6 @@ import land.face.market.managers.ListingManager;
 import land.face.market.managers.MarketManager;
 import land.face.market.menu.confirm.PurchaseConfirmMenu;
 import land.face.market.menu.listings.ListingMenu;
-import land.face.market.menu.main.MarketMenu;
 import land.face.market.menu.sell.SellMenu;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -85,7 +84,6 @@ public class FacelandMarketPlugin extends JavaPlugin {
         1120 * 20L // Run every 2 minutes
     );
 
-    MarketMenu.setInstance(new MarketMenu(this));
     PurchaseConfirmMenu.setInstance(new PurchaseConfirmMenu(this));
     SellMenu.setInstance(new SellMenu(this));
     ListingMenu.setInstance(new ListingMenu(this));
@@ -94,6 +92,8 @@ public class FacelandMarketPlugin extends JavaPlugin {
 
     PaperCommandManager commandManager = new PaperCommandManager(this);
     commandManager.registerCommand(new MarketCommand(this));
+
+    setupEconomy();
 
     Bukkit.getServer().getLogger().info("FacelandMarket Enabled!");
   }
@@ -201,8 +201,8 @@ public class FacelandMarketPlugin extends JavaPlugin {
 
   private synchronized void saveYml() {
     long time = System.currentTimeMillis();
-    System.out.println("Saving market data...");
+    Bukkit.getLogger().info("Saving market data...");
     listingData.save();
-    System.out.println("Saved async in " + (System.currentTimeMillis() - time) + "ms");
+    Bukkit.getLogger().info("Saved async in " + (System.currentTimeMillis() - time) + "ms");
   }
 }

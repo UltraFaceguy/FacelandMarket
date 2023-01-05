@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
-import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.managers.MarketManager;
@@ -34,16 +34,23 @@ public class PreviousIcon extends MenuItem {
   private final ItemStack icon;
 
   public PreviousIcon(MarketManager marketManager) {
-    super("", new ItemStack(Material.ARROW));
+    super("", new ItemStack(Material.PAPER));
     this.marketManager = marketManager;
-    icon = new ItemStack(Material.ARROW);
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&e<< Previous Page"));
+    icon = new ItemStack(Material.PAPER);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack newIcon = icon;
-    newIcon.setAmount(Math.max(1, marketManager.getPlayerState(player).getPage() - 1));
+    ItemStack newIcon = icon.clone();
+    PlayerMarketState state = marketManager.getPlayerState(player);
+    if (state.getPage() == 1) {
+      ItemStackExtensionsKt.setDisplayName(newIcon, FaceColor.LIGHT_GRAY + "<< Previous Page");
+      ItemStackExtensionsKt.setCustomModelData(newIcon, 73);
+    } else {
+      ItemStackExtensionsKt.setDisplayName(newIcon, FaceColor.YELLOW + "<< Previous Page");
+      ItemStackExtensionsKt.setCustomModelData(newIcon, 72);
+    }
+    newIcon.setAmount(Math.max(1, state.getPage() - 1));
     return newIcon;
   }
 

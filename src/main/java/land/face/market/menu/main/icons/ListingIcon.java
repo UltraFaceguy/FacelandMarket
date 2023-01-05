@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -82,14 +83,14 @@ public class ListingIcon extends MenuItem {
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
     String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
     displayLore.add("");
-    displayLore.add(ChatColor.GOLD + "Price: " + ChatColor.YELLOW + plugin.getEconomy()
+    displayLore.add(FaceColor.ORANGE + "Price: " + FaceColor.YELLOW + plugin.getEconomy()
         .format(listing.getPrice()));
-    displayLore.add(ChatColor.GOLD + "Seller: " + ChatColor.WHITE + listing.getSellerName());
-    displayLore.add(ChatColor.GOLD + "Expiry: " + ChatColor.WHITE + format);
+    displayLore.add(FaceColor.ORANGE + "Seller: " + FaceColor.WHITE + listing.getSellerName());
+    displayLore.add(FaceColor.ORANGE + "Expiry: " + FaceColor.WHITE + format);
     if (DEBUG_FLAGS) {
-      displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getCategory());
-      displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getFlagA());
-      displayLore.add(ChatColor.DARK_GRAY + " - " + listing.getFlagB());
+      displayLore.add(FaceColor.DARK_GRAY + " - " + listing.getCategory());
+      displayLore.add(FaceColor.DARK_GRAY + " - " + listing.getFlagA());
+      displayLore.add(FaceColor.DARK_GRAY + " - " + listing.getFlagB());
     }
     icon.setLore(displayLore);
     return icon;

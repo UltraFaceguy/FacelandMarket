@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class SellButton extends MenuItem {
 
-  private FacelandMarketPlugin plugin;
+  private final FacelandMarketPlugin plugin;
 
   public SellButton(FacelandMarketPlugin plugin) {
     super("", new ItemStack(Material.HOPPER));

@@ -18,13 +18,17 @@
  */
 package land.face.market.menu.main.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import land.face.market.data.PlayerMarketState;
+import land.face.market.data.PlayerMarketState.FilterFlagA;
 import land.face.market.data.PlayerMarketState.SortStyle;
 import land.face.market.managers.CategoryAndFilterManager;
 import land.face.market.managers.MarketManager;
@@ -43,11 +47,11 @@ public class SortButton extends MenuItem {
   private final ItemStack icon;
 
   public SortButton(MarketManager marketManager, CategoryAndFilterManager categoryManager) {
-    super("", new ItemStack(Material.CARTOGRAPHY_TABLE));
+    super("", new ItemStack(Material.PAPER));
     this.marketManager = marketManager;
     this.categoryManager = categoryManager;
-    icon = new ItemStack(Material.CARTOGRAPHY_TABLE);
-    ItemStackExtensionsKt.setDisplayName(icon, ChatColor.WHITE + "Sort Order");
+    icon = new ItemStack(Material.PAPER);
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.LIGHT_GREEN + "Sort Order");
   }
 
   @Override
@@ -56,12 +60,13 @@ public class SortButton extends MenuItem {
     PlayerMarketState state = marketManager.getPlayerState(player);
     for (SortStyle s : PlayerMarketState.SORT_STYLES) {
       if (state.getSortStyle() == s) {
-        lore.add("&f● " + categoryManager.getSortName(s));
+        lore.add(FaceColor.WHITE + "● " + categoryManager.getSortName(s));
       } else {
-        lore.add("&7" + categoryManager.getSortName(s));
+        lore.add(FaceColor.LIGHT_GRAY + categoryManager.getSortName(s));
       }
     }
     ItemStack newIcon = icon.clone();
+    ItemStackExtensionsKt.setCustomModelData(newIcon, 77);
     newIcon.setLore(ListExtensionsKt.chatColorize(lore));
     return newIcon;
   }
@@ -69,23 +74,31 @@ public class SortButton extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    event.setWillUpdate(false);
     if (event.getClickType() == ClickType.DOUBLE_CLICK) {
-      event.setWillUpdate(false);
       return;
     }
-    PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
-
-    Iterator<SortStyle> iterator = Arrays.asList(PlayerMarketState.SORT_STYLES).iterator();
-    while (iterator.hasNext()) {
-      SortStyle next = iterator.next();
-      if (next == state.getSortStyle()) {
-        if (iterator.hasNext()) {
-          state.setSortStyle(iterator.next());
-        } else {
-          state.setSortStyle(SortStyle.TIME_DESCENDING);
-        }
-      }
+    if (event.getClickType() != ClickType.RIGHT && event.getClickType() != ClickType.LEFT) {
+      return;
     }
     event.setWillUpdate(true);
+
+    PlayerMarketState marketState = marketManager.getPlayerState(event.getPlayer());
+    List<SortStyle> order = List.of(PlayerMarketState.SORT_STYLES);
+    SortStyle currentFlag = marketState.getSortStyle();
+
+    if (event.getClickType().isLeftClick()) {
+      if (order.indexOf(currentFlag) == order.size() - 1) {
+        marketState.setSortStyle(order.get(0));
+      } else {
+        marketState.setSortStyle(order.get(order.indexOf(currentFlag) + 1));
+      }
+    } else if (event.getClickType().isRightClick()) {
+      if (currentFlag.ordinal() == 0) {
+        marketState.setSortStyle(order.get(order.size() - 1));
+      } else {
+        marketState.setSortStyle(order.get(order.indexOf(currentFlag) - 1));
+      }
+    }
   }
 }

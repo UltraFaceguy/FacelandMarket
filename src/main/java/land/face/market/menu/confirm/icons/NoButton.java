@@ -20,6 +20,7 @@ package land.face.market.menu.confirm.icons;
 
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
+import land.face.market.FacelandMarketPlugin;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
@@ -28,8 +29,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class NoButton extends MenuItem {
 
-  public NoButton() {
+  private FacelandMarketPlugin plugin;
+
+  public NoButton(FacelandMarketPlugin plugin) {
     super("", new ItemStack(Material.RED_CONCRETE));
+    this.plugin = plugin;
   }
 
   @Override
@@ -42,6 +46,6 @@ public class NoButton extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
-    event.setWillGoBack(true);
+    plugin.getMarketManager().openMarket(event.getPlayer());
   }
 }

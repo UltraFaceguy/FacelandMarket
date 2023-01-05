@@ -48,16 +48,15 @@ public final class MenuListener implements Listener {
       return;
     }
     if ((((MenuHolder) event.getInventory().getHolder()).getMenu() instanceof SellMenu)) {
-      SellMenu.getInstance().setSelectedItem((Player) event.getWhoClicked(), stack);
-      SellMenu.getInstance().update((Player) event.getWhoClicked());
+      ((SellMenu) (((MenuHolder) event.getInventory().getHolder()).getMenu())).setSelectedItem((Player) event.getWhoClicked(), stack);
+      ((MenuHolder) event.getInventory().getHolder()).getMenu().update((Player) event.getWhoClicked());
       return;
     }
     if ((((MenuHolder) event.getInventory().getHolder()).getMenu() instanceof ListingMenu)) {
       event.getWhoClicked().closeInventory(Reason.PLUGIN);
-      SellMenu.getInstance().open((Player) event.getWhoClicked());
-      SellMenu.getInstance().setSelectedItem((Player) event.getWhoClicked(), stack);
-      SellMenu.getInstance().update((Player) event.getWhoClicked());
-      return;
+      ((MenuHolder) event.getInventory().getHolder()).getMenu().open((Player) event.getWhoClicked());
+      ((SellMenu) (((MenuHolder) event.getInventory().getHolder()).getMenu())).setSelectedItem((Player) event.getWhoClicked(), stack);
+      ((MenuHolder) event.getInventory().getHolder()).getMenu().update((Player) event.getWhoClicked());
     }
   }
 

@@ -54,8 +54,9 @@ public class ListingSlot extends MenuItem {
     this.listingId = listingId;
     this.plugin = plugin;
 
-    noPerms = new ItemStack(Material.ORANGE_STAINED_GLASS_PANE);
+    noPerms = new ItemStack(Material.PAPER);
     ItemStackExtensionsKt.setDisplayName(noPerms, StringExtensionsKt.chatColorize("&7&l[ Locked ]"));
+    ItemStackExtensionsKt.setCustomModelData(noPerms, 23);
     List<String> lore = new ArrayList<>();
     lore.add("&7You can purchase extra market");
     lore.add("&7slots for &d▼FaceGems &7or &e◎Bits");

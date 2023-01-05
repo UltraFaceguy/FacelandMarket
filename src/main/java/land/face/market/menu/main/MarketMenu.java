@@ -19,8 +19,11 @@
 package land.face.market.menu.main;
 
 import land.face.market.FacelandMarketPlugin;
+import land.face.market.data.PlayerMarketState;
 import land.face.market.data.PlayerMarketState.Category;
-import land.face.market.menu.BlankIcon;
+import land.face.market.data.PlayerMarketState.FilterFlagA;
+import land.face.market.data.PlayerMarketState.FilterFlagB;
+import land.face.market.data.PlayerMarketState.SortStyle;
 import land.face.market.menu.main.icons.CategoryIcon;
 import land.face.market.menu.main.icons.CollectIcon;
 import land.face.market.menu.main.icons.FilterButtonA;
@@ -30,16 +33,18 @@ import land.face.market.menu.main.icons.MyListingsIcon;
 import land.face.market.menu.main.icons.NextIcon;
 import land.face.market.menu.main.icons.PreviousIcon;
 import land.face.market.menu.main.icons.SortButton;
+import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import ninja.amp.ampmenus.menus.ItemMenu;
 
 public class MarketMenu extends ItemMenu {
 
-  private static MarketMenu instance;
+  @Getter
+  private final PlayerMarketState marketState;
 
   public MarketMenu(FacelandMarketPlugin plugin) {
-    super("Marketplace", Size.fit(56), plugin);
+    super(ChatColor.WHITE + "\uF808鎮", Size.fit(56), plugin);
     setItem(0, new CollectIcon(plugin.getMarketManager()));
-    setItem(1, new BlankIcon());
     setItem(2, new CategoryIcon(plugin.getMarketManager(), plugin.getCategoryManager(),
         Category.CATEGORY_1));
     setItem(3, new CategoryIcon(plugin.getMarketManager(), plugin.getCategoryManager(),
@@ -50,7 +55,6 @@ public class MarketMenu extends ItemMenu {
         Category.CATEGORY_4));
     setItem(6, new CategoryIcon(plugin.getMarketManager(), plugin.getCategoryManager(),
         Category.CATEGORY_5));
-    setItem(7, new BlankIcon());
     setItem(8, new MyListingsIcon(plugin.getMarketManager()));
 
     int listingSlot = 0;
@@ -60,26 +64,20 @@ public class MarketMenu extends ItemMenu {
     }
 
     setItem(45, new PreviousIcon(plugin.getMarketManager()));
-    setItem(46, new BlankIcon());
     setItem(47, new FilterButtonA(plugin.getMarketManager(), plugin.getCategoryManager()));
     setItem(48, new FilterButtonB(plugin.getMarketManager(), plugin.getCategoryManager()));
-    setItem(49, new BlankIcon());
-    setItem(50, new BlankIcon());
     setItem(51, new SortButton(plugin.getMarketManager(), plugin.getCategoryManager()));
-    setItem(52, new BlankIcon());
     setItem(53, new NextIcon(plugin.getMarketManager()));
 
     ListingIcon.DEBUG_FLAGS = FacelandMarketPlugin.getInstance().getConfiguration().getBoolean("debug-flags");
-  }
 
-  public static MarketMenu getInstance() {
-    return instance;
+    marketState = new PlayerMarketState();
+    marketState.setSortStyle(SortStyle.TIME_DESCENDING);
+    marketState.setSelectedCategory(Category.CATEGORY_1);
+    marketState.setPage(1);
+    marketState.setFilterA(FilterFlagA.ALL);
+    marketState.setFilterB(FilterFlagB.ALL);
   }
-
-  public static void setInstance(MarketMenu menu) {
-    instance = menu;
-  }
-
 }
 
 /*

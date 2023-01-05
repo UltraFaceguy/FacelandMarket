@@ -31,13 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
-public final class LoginListener implements Listener {
-
-  private FacelandMarketPlugin plugin;
-
-  public LoginListener(FacelandMarketPlugin plugin) {
-    this.plugin = plugin;
-  }
+public record LoginListener(FacelandMarketPlugin plugin) implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onLogin(PlayerLoginEvent event) {
@@ -67,10 +61,12 @@ public final class LoginListener implements Listener {
       return;
     }
     if (unclaimed > 0) {
-      MessageUtils.sendMessage(player, "&e&lYou have &f&l" + unclaimed + " &e&lmarket listings to collect!");
+      MessageUtils.sendMessage(player,
+          "&e&lYou have &f&l" + unclaimed + " &e&lmarket listings to collect!");
     }
     if (expired > 0) {
-      MessageUtils.sendMessage(player, "&e&lYou have &c&l" + expired + " &e&lexpired market listings");
+      MessageUtils.sendMessage(player,
+          "&e&lYou have &c&l" + expired + " &e&lexpired market listings");
     }
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, 1, 1f);
   }

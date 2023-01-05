@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.listings.icons;
 
-import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
@@ -36,7 +36,7 @@ public class NewListingButton extends MenuItem {
   @Override
   public ItemStack getFinalIcon(Player player) {
     ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&aList A New Item"));
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.LIGHT_GREEN + "List A New Item");
     return icon;
   }
 

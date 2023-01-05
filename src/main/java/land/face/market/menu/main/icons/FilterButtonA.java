@@ -18,7 +18,7 @@
  */
 package land.face.market.menu.main.icons;
 
-import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,11 +29,11 @@ import land.face.market.data.CategoryContainer;
 import land.face.market.data.PlayerMarketState;
 import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
+import land.face.market.data.PlayerMarketState.FilterFlagB;
 import land.face.market.managers.CategoryAndFilterManager;
 import land.face.market.managers.MarketManager;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -46,7 +46,7 @@ public class FilterButtonA extends MenuItem {
   private final Map<Category, List<FilterFlagA>> filterOrder = new HashMap<>();
 
   public FilterButtonA(MarketManager marketManager, CategoryAndFilterManager categoryManager) {
-    super("", new ItemStack(Material.HOPPER));
+    super("", new ItemStack(Material.PAPER));
     this.marketManager = marketManager;
     this.categoryManager = categoryManager;
     for (Category c : MarketManager.CATEGORIES) {
@@ -66,20 +66,21 @@ public class FilterButtonA extends MenuItem {
     List<String> lore = new ArrayList<>();
     PlayerMarketState state = marketManager.getPlayerState(player);
     if (filterOrder.get(state.getSelectedCategory()).size() == 0) {
-      return new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+      return new ItemStack(Material.AIR);
     }
     for (FilterFlagA f : filterOrder.get(state.getSelectedCategory())) {
       if (state.getFilterA() == f) {
-        lore.add("&f● " + categoryManager.getCategoryData().get(state.getSelectedCategory())
+        lore.add(FaceColor.WHITE + "● " + categoryManager.getCategoryData().get(state.getSelectedCategory())
             .getFilterNamesA().get(f));
       } else {
-        lore.add("&7" + categoryManager.getCategoryData().get(state.getSelectedCategory())
+        lore.add(FaceColor.LIGHT_GRAY + categoryManager.getCategoryData().get(state.getSelectedCategory())
             .getFilterNamesA().get(f));
       }
     }
     ItemStack icon = getIcon().clone();
-    ItemStackExtensionsKt.setDisplayName(icon, ChatColor.WHITE + "Filter");
-    icon.setLore(ListExtensionsKt.chatColorize(lore));
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.YELLOW + "Filter");
+    ItemStackExtensionsKt.setCustomModelData(icon, 76);
+    icon.setLore(lore);
 
     return icon;
   }
@@ -87,23 +88,31 @@ public class FilterButtonA extends MenuItem {
   @Override
   public void onItemClick(ItemClickEvent event) {
     super.onItemClick(event);
+    event.setWillUpdate(false);
     if (event.getClickType() == ClickType.DOUBLE_CLICK) {
-      event.setWillUpdate(false);
       return;
     }
-    PlayerMarketState state = marketManager.getPlayerState(event.getPlayer());
-
-    Iterator iterator = filterOrder.get(state.getSelectedCategory()).iterator();
-    while (iterator.hasNext()) {
-      FilterFlagA next = (FilterFlagA) iterator.next();
-      if (next == state.getFilterA()) {
-        if (iterator.hasNext()) {
-          state.setFilterA((FilterFlagA) iterator.next());
-        } else {
-          state.setFilterA(filterOrder.get(state.getSelectedCategory()).get(0));
-        }
-      }
+    if (event.getClickType() != ClickType.RIGHT && event.getClickType() != ClickType.LEFT) {
+      return;
     }
     event.setWillUpdate(true);
+
+    PlayerMarketState marketState = marketManager.getPlayerState(event.getPlayer());
+    List<FilterFlagA> order = filterOrder.get(marketState.getSelectedCategory());
+    FilterFlagA currentFlag = marketState.getFilterA();
+
+    if (event.getClickType().isLeftClick()) {
+      if (order.indexOf(currentFlag) == order.size() - 1) {
+        marketState.setFilterA(order.get(0));
+      } else {
+        marketState.setFilterA(order.get(order.indexOf(currentFlag) + 1));
+      }
+    } else if (event.getClickType().isRightClick()) {
+      if (currentFlag.ordinal() == 0) {
+        marketState.setFilterA(order.get(order.size() - 1));
+      } else {
+        marketState.setFilterA(order.get(order.indexOf(currentFlag) - 1));
+      }
+    }
   }
 }

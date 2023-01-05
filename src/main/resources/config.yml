@@ -5,19 +5,19 @@ debug-flags: false
 
 permissions:
   marketupgrade.one:
-    slots: 3
+    slots: 2
     title: "Locked!"
     description:
       - "Buy it nerd!"
     command: "buy {player}"
   marketupgrade.two:
-    slots: 3
+    slots: 2
     title: "Locked!"
     description:
       - "Buy it nerd!"
     command: "buy {player}"
   marketupgrade.three:
-    slots: 3
+    slots: 2
     title: "Locked!"
     description:
       - "Buy it nerd!"
