@@ -30,14 +30,15 @@ import org.bukkit.inventory.ItemStack;
 public class NewListingButton extends MenuItem {
 
   public NewListingButton() {
-    super("", new ItemStack(Material.EMERALD));
+    super("", new ItemStack(Material.BARRIER));
+    ItemStack icon = getIcon();
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.LIGHT_GREEN + "List A New Item");
+    ItemStackExtensionsKt.setCustomModelData(icon, 50);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.LIGHT_GREEN + "List A New Item");
-    return icon;
+    return getIcon();
   }
 
   @Override

@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.listings;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -39,7 +40,7 @@ public class ListingMenu extends ItemMenu {
   private final Map<Player, Integer> slots = new WeakHashMap<>();
 
   public ListingMenu(FacelandMarketPlugin plugin) {
-    super("Listings", Size.fit(35), plugin);
+    super(FaceColor.TRUE_WHITE + "砵" + FaceColor.ORANGE + "Your Listings", Size.fit(35), plugin);
     this.plugin = plugin;
 
     setItem(10, new ListingSlot(plugin, 1));
@@ -57,8 +58,11 @@ public class ListingMenu extends ItemMenu {
     setItem(24, new ListingSlot(plugin, 13));
     setItem(25, new ListingSlot(plugin, 14));
 
-    setItem(30, new BackButton(plugin));
-    setItem(32, new NewListingButton());
+    setItem(29, new NewListingButton());
+    setItem(30, new NewListingButton());
+
+    setItem(32, new BackButton(plugin));
+    setItem(33, new BackButton(plugin));
   }
 
   @Override

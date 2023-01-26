@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.confirm.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import land.face.market.FacelandMarketPlugin;
@@ -32,15 +33,15 @@ public class NoButton extends MenuItem {
   private FacelandMarketPlugin plugin;
 
   public NoButton(FacelandMarketPlugin plugin) {
-    super("", new ItemStack(Material.RED_CONCRETE));
+    super("", new ItemStack(Material.BARRIER));
+    ItemStackExtensionsKt.setCustomModelData(getIcon(), 50);
+    ItemStackExtensionsKt.setDisplayName(getIcon(), FaceColor.ORANGE + "no thank u :)");
     this.plugin = plugin;
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eno thank u :)"));
-    return icon;
+    return getIcon();
   }
 
   @Override

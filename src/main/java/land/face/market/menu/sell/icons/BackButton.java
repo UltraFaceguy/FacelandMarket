@@ -30,14 +30,15 @@ import org.bukkit.inventory.ItemStack;
 public class BackButton extends MenuItem {
 
   public BackButton() {
-    super("", new ItemStack(Material.ARROW));
+    super("", new ItemStack(Material.BARRIER));
+    ItemStack icon = getIcon();
+    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eCancel"));
+    ItemStackExtensionsKt.setCustomModelData(icon, 50);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&eCancel"));
-    return icon;
+    return getIcon();
   }
 
   @Override

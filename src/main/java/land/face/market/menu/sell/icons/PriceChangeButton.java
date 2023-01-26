@@ -30,6 +30,7 @@ import land.face.market.menu.sell.SellMenu;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -43,11 +44,22 @@ public class PriceChangeButton extends MenuItem {
   private final String currPriceString;
   private final List<String> instructions;
 
-  public PriceChangeButton(FacelandMarketPlugin plugin, Material material, int changeAmount) {
-    super("", new ItemStack(material));
+  public PriceChangeButton(FacelandMarketPlugin plugin, int changeAmount) {
+    super("", new ItemStack(Material.GOLD_INGOT));
     this.plugin = plugin;
     this.changeAmount = changeAmount;
-    icon = new ItemStack(material);
+    icon = new ItemStack(Material.GOLD_INGOT);
+    ItemStackExtensionsKt.setCustomModelData(icon, switch (changeAmount) {
+      case 1 -> 100;
+      case 10 -> 200;
+      case 100 -> 300;
+      case 1000 -> 400;
+      case 10000 -> 500;
+      case 100000 -> 600;
+      case 1000000 -> 700;
+      case 10000000 -> 800;
+      default -> 1000;
+    });
     ItemStackExtensionsKt.setDisplayName(icon, StringExtensionsKt.chatColorize("&6&n&lClick To Chance Price!"));
     currPriceString = StringExtensionsKt.chatColorize("&f&lCurrent Price: &e");
     List<String> lore = new ArrayList<>();
@@ -72,8 +84,10 @@ public class PriceChangeButton extends MenuItem {
     super.onItemClick(event);
     int change;
     if (event.getClickType() == ClickType.LEFT || event.getClickType() == ClickType.SHIFT_LEFT) {
+      event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
       change = changeAmount;
     } else if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+      event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, 1, 1);
       change = -changeAmount;
     } else {
       event.setWillUpdate(false);

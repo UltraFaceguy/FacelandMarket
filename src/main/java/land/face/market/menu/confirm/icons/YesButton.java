@@ -36,13 +36,14 @@ public class YesButton extends MenuItem {
   private final FacelandMarketPlugin plugin;
 
   public YesButton(FacelandMarketPlugin plugin) {
-    super("", new ItemStack(Material.HOPPER));
+    super("", new ItemStack(Material.BARRIER));
     this.plugin = plugin;
+    ItemStackExtensionsKt.setCustomModelData(getIcon(), 50);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
+    ItemStack stack = getIcon();
     Listing listing = PurchaseConfirmMenu.getInstance().getSelectedListing(player);
     ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize(
         "&a&lClick To Purchase For &e&l" + plugin.getEconomy().format(listing.getPrice())));

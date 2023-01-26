@@ -36,13 +36,14 @@ public class SellButton extends MenuItem {
   private final FacelandMarketPlugin plugin;
 
   public SellButton(FacelandMarketPlugin plugin) {
-    super("", new ItemStack(Material.HOPPER));
+    super("", new ItemStack(Material.BARRIER));
     this.plugin = plugin;
+    ItemStackExtensionsKt.setCustomModelData(getIcon(), 50);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack stack = new ItemStack(Material.GREEN_CONCRETE);
+    ItemStack stack = getIcon();
     ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize("&7Click to sell for &e" +
         plugin.getEconomy().format(SellMenu.getInstance().getSelectedPrice(player))));
     return stack;

@@ -33,15 +33,16 @@ public class BackButton extends MenuItem {
   private final FacelandMarketPlugin plugin;
 
   public BackButton(FacelandMarketPlugin plugin) {
-    super("", new ItemStack(Material.ARROW));
+    super("", new ItemStack(Material.BARRIER));
     this.plugin = plugin;
+    ItemStack icon = getIcon();
+    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.YELLOW + "Return To Market");
+    ItemStackExtensionsKt.setCustomModelData(icon, 50);
   }
 
   @Override
   public ItemStack getFinalIcon(Player player) {
-    ItemStack icon = getIcon();
-    ItemStackExtensionsKt.setDisplayName(icon, FaceColor.YELLOW + "Return To Market");
-    return icon;
+    return getIcon();
   }
 
   @Override

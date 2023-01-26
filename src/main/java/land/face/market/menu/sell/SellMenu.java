@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.sell;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
 import java.util.ArrayList;
@@ -58,21 +59,24 @@ public class SellMenu extends ItemMenu {
     45 46 47 48 49 50 51 52 53
   */
   public SellMenu(FacelandMarketPlugin plugin) {
-    super("Sell Item", Size.fit(36), plugin);
+    super(FaceColor.TRUE_WHITE + "砶" + FaceColor.ORANGE + "Set Item Price", Size.fit(36), plugin);
     this.plugin = plugin;
     bannedStrings = plugin.getSettings().getStringList("config.disallowed-names-and-lores");
     sellItem = new SellItem();
-    setItem(13, sellItem);
-    setItem(15, new SellButton(plugin));
-    setItem(11, new BackButton());
 
-    setItem(28, new PriceChangeButton(plugin, Material.GOLD_NUGGET, 1));
-    setItem(29, new PriceChangeButton(plugin, Material.GOLD_INGOT, 10));
-    setItem(30, new PriceChangeButton(plugin, Material.DIAMOND, 100));
-    setItem(31, new PriceChangeButton(plugin, Material.EMERALD, 1000));
-    setItem(32, new PriceChangeButton(plugin, Material.GOLD_BLOCK, 10000));
-    setItem(33, new PriceChangeButton(plugin, Material.DIAMOND_BLOCK, 100000));
-    setItem(34, new PriceChangeButton(plugin, Material.EMERALD_BLOCK, 1000000));
+    setItem(11, new SellButton(plugin));
+
+    setItem(13, sellItem);
+
+    setItem(15, new BackButton());
+
+    setItem(28, new PriceChangeButton(plugin, 1));
+    setItem(29, new PriceChangeButton(plugin, 10));
+    setItem(30, new PriceChangeButton(plugin, 100));
+    setItem(31, new PriceChangeButton(plugin, 1000));
+    setItem(32, new PriceChangeButton(plugin, 10000));
+    setItem(33, new PriceChangeButton(plugin, 100000));
+    setItem(34, new PriceChangeButton(plugin, 1000000));
   }
 
   @Override

@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.confirm;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import java.util.Map;
 import java.util.WeakHashMap;
 import land.face.market.FacelandMarketPlugin;
@@ -35,10 +36,10 @@ public class PurchaseConfirmMenu extends ItemMenu {
   private final Map<Player, Listing> selectedListing = new WeakHashMap<>();
 
   public PurchaseConfirmMenu(FacelandMarketPlugin plugin) {
-    super("Buy Item", Size.fit(36), plugin);
-    setItem(20, new YesButton(plugin));
+    super(FaceColor.TRUE_WHITE + "砶" + FaceColor.ORANGE + "Confirm Purchase", Size.fit(36), plugin);
+    setItem(11, new YesButton(plugin));
     setItem(13, new ListingSample());
-    setItem(24, new NoButton(plugin));
+    setItem(15, new NoButton(plugin));
   }
 
   public void setSelectedListing(Player player, Listing listing) {
