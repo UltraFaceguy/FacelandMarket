@@ -56,13 +56,12 @@ public class ListingSlot extends MenuItem {
 
     noPerms = new ItemStack(Material.PAPER);
     ItemStackExtensionsKt.setDisplayName(noPerms, StringExtensionsKt.chatColorize("&7&l[ Locked ]"));
-    ItemStackExtensionsKt.setCustomModelData(noPerms, 23);
+    ItemStackExtensionsKt.setCustomModelData(noPerms, 998);
     List<String> lore = new ArrayList<>();
-    lore.add("&7You can purchase extra market");
-    lore.add("&7slots for &d▼FaceGems &7or &e◎Bits");
-    lore.add("&7by typing &b/buy&7! Also, players");
-    lore.add("&7who are &eContributors &7get four");
-    lore.add("&7more slots!");
+    lore.add("&7You can purchase extra market slots");
+    lore.add("&7for &f▼&dFaceGems &7by typing &b/buy&7!");
+    lore.add("&7Players who are &eContributors &7get four");
+    lore.add("&7four more slots!");
     noPerms.setLore(ListExtensionsKt.chatColorize(lore));
 
     itemSold = new ItemStack(Material.GOLD_BLOCK);

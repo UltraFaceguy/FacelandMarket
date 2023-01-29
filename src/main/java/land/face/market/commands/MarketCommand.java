@@ -1,5 +1,6 @@
 package land.face.market.commands;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.shade.acf.BaseCommand;
 import com.tealcube.minecraft.bukkit.shade.acf.annotation.CommandAlias;
 import com.tealcube.minecraft.bukkit.shade.acf.annotation.CommandCompletion;
@@ -24,18 +25,21 @@ public class MarketCommand extends BaseCommand {
   public void reloadCommand(CommandSender sender) {
     plugin.onDisable();
     plugin.onEnable();
+    MessageUtils.sendMessage(sender, "&aFacelandMarket reloaded!");
   }
 
-  @Subcommand("reload")
+  @Subcommand("save")
   @CommandPermission("market.save")
   public void saveCommand(CommandSender sender) {
     plugin.saveListings(false);
+    MessageUtils.sendMessage(sender, "&aAll FacelandMarket listings saved!");
   }
 
   @Subcommand("relist")
   @CommandPermission("market.relist")
   public void relistCommand(CommandSender sender) {
     plugin.getMarketManager().reListItems();
+    MessageUtils.sendMessage(sender, "&aListing logic re-applied!");
   }
 
   @Subcommand("open")
