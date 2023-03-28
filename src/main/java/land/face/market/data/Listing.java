@@ -4,6 +4,9 @@ import java.util.UUID;
 import land.face.market.data.PlayerMarketState.Category;
 import land.face.market.data.PlayerMarketState.FilterFlagA;
 import land.face.market.data.PlayerMarketState.FilterFlagB;
+import land.face.market.utils.DiscordUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
 public class Listing {
@@ -18,6 +21,8 @@ public class Listing {
   private UUID sellerUuid;
   private UUID listingId;
   private boolean sold;
+  @Getter @Setter
+  private boolean claimed;
   private boolean expired;
 
   public ItemStack getItemStack() {

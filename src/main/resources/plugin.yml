@@ -7,6 +7,7 @@ depend:
   - Facecore
   - Strife
   - Loot
+  - DiscordSRV
 api-version: 1.15
 
 commands:

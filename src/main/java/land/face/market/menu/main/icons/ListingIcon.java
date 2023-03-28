@@ -81,7 +81,12 @@ public class ListingIcon extends MenuItem {
     icon = listing.getItemStack().clone();
     List<String> displayLore = new ArrayList<>(icon.getLore() == null ? new ArrayList<>() : icon.getLore());
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
-    String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
+    String format;
+    if (msRemaining < 60000) {
+      format = FaceColor.RED + FaceColor.BOLD.s() + "VERY SOON!!";
+    } else {
+      format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
+    }
     displayLore.add("");
     displayLore.add(FaceColor.ORANGE + "Price: " + FaceColor.YELLOW + plugin.getEconomy()
         .format(listing.getPrice()));

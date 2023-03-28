@@ -27,7 +27,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
 import org.bukkit.inventory.ItemStack;
 
 public final class MenuListener implements Listener {
@@ -53,10 +52,8 @@ public final class MenuListener implements Listener {
       return;
     }
     if ((((MenuHolder) event.getInventory().getHolder()).getMenu() instanceof ListingMenu)) {
-      event.getWhoClicked().closeInventory(Reason.PLUGIN);
-      ((MenuHolder) event.getInventory().getHolder()).getMenu().open((Player) event.getWhoClicked());
-      ((SellMenu) (((MenuHolder) event.getInventory().getHolder()).getMenu())).setSelectedItem((Player) event.getWhoClicked(), stack);
-      ((MenuHolder) event.getInventory().getHolder()).getMenu().update((Player) event.getWhoClicked());
+      SellMenu.getInstance().setSelectedItem((Player) event.getWhoClicked(), stack);
+      SellMenu.getInstance().open((Player) event.getWhoClicked());
     }
   }
 

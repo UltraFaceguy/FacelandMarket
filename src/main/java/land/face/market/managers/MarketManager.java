@@ -1,5 +1,6 @@
 package land.face.market.managers;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.StringUtils;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -28,6 +29,7 @@ import land.face.market.events.PurchaseItemEvent;
 import land.face.market.menu.listings.ListingMenu;
 import land.face.market.menu.main.MarketMenu;
 import land.face.market.utils.InventoryUtil;
+import land.face.strife.StrifePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -98,7 +100,7 @@ public class MarketManager {
 
   public boolean hasEarnings(Player player) {
     for (Listing l : marketListing) {
-      if (l.isSold() && l.getSellerUuid().equals(player.getUniqueId())) {
+      if (l.isSold() && !l.isClaimed() && l.getSellerUuid().equals(player.getUniqueId())) {
         return true;
       }
     }
@@ -113,6 +115,23 @@ public class MarketManager {
       }
     }
     return listings;
+  }
+
+  public void updateMarketNotif(Player player) {
+    Bukkit.getScheduler().runTaskLater(plugin, () -> StrifePlugin.getInstance().getGuiManager()
+        .updateMarketNotif(player, getMarketNotif(player)), 10L);
+  }
+
+  public boolean getMarketNotif(Player player) {
+    for (Listing l : marketListing) {
+      if (!l.getSellerUuid().equals(player.getUniqueId())) {
+        continue;
+      }
+      if (l.isExpired() || l.isSold()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void expireOldListings() {
@@ -161,27 +180,33 @@ public class MarketManager {
     if (listing == null || !listing.getSellerUuid().equals(player.getUniqueId())) {
       return;
     }
+    if (listing.isClaimed()) {
+      return;
+    }
     if (!listing.isSold()) {
       return;
     }
+    listing.setClaimed(true);
     String name = ItemStackExtensionsKt.getDisplayName(listing.getItemStack());
     MessageUtils.sendMessage(player, "&2[Market] &aCollected &f" + name + "&r&a!");
     MessageUtils.sendMessage(player, "&e  +" + plugin.getEconomy().format(listing.getPrice()));
     marketListing.remove(listing);
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_CHAIN, 1, 1.5f);
     plugin.getEconomy().depositPlayer(player, listing.getPrice());
+    plugin.getMarketManager().updateMarketNotif(player);
   }
 
   public void reclaimItem(Player player, Listing listing) {
     listing = getListing(listing.getListingId());
-    if (listing == null || !listing.getSellerUuid().equals(player.getUniqueId()) || listing
-        .isSold()) {
+    if (listing == null || !listing.getSellerUuid().equals(player.getUniqueId()) ||
+        listing.isSold()) {
       return;
     }
     if (!InventoryUtil.addItems(player, true, listing.getItemStack().clone())) {
       return;
     }
     marketListing.remove(listing);
+    plugin.getMarketManager().updateMarketNotif(player);
     if (!listing.isExpired()) {
       updateMarket();
     }
@@ -221,6 +246,7 @@ public class MarketManager {
       MessageUtils.sendMessage(seller, "&2[Market] &aYour listing for&f " + name
           + " &r&awas purchased! Visit a marketplace to collect your &eBits&a!");
       ListingMenu.getInstance().update(seller);
+      plugin.getMarketManager().updateMarketNotif(seller);
     } else {
       sendDiscordMessage(listing.getSellerUuid(),
           "**Greetings gamer!** Your market listing of **" + ChatColor.stripColor(
@@ -290,12 +316,10 @@ public class MarketManager {
 
     removalStack.setAmount(0);
     marketListing.add(listing);
-
-    String name = ItemStackExtensionsKt.getDisplayName(stack);
-    MessageUtils.sendMessage(seller,
-        "&2[Market] &aYou listed &f" + name + " &r&afor &e" + plugin.getEconomy().format(price)
-            + "&a!");
     updateMarket();
+    land.face.market.utils.DiscordUtil.sendToDiscord(seller, stack, "\uD83D\uDCC8 " +
+        FaceColor.YELLOW + "%player%" + FaceColor.GREEN + " has listed %item%" + FaceColor.GREEN +
+        " on the market for " + FaceColor.YELLOW + price + " Bits" + FaceColor.GREEN + "!");
     return true;
   }
 
@@ -304,6 +328,7 @@ public class MarketManager {
       ListItemEvent listItemEvent = new ListItemEvent(null, listing);
       Bukkit.getPluginManager().callEvent(listItemEvent);
     }
+    updateMarket();
   }
 
   private Category getFallbackCatergory(Material material) {

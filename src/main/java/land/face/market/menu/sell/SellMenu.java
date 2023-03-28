@@ -34,7 +34,6 @@ import land.face.market.menu.sell.icons.SellItem;
 import ninja.amp.ampmenus.menus.ItemMenu;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

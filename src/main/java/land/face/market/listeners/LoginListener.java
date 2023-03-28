@@ -51,8 +51,9 @@ public record LoginListener(FacelandMarketPlugin plugin) implements Listener {
       }
       int finalUnclaimed = unclaimed;
       int finalExpired = expired;
-      Bukkit.getScheduler().runTaskLater(plugin, () -> sendSpam(event.getPlayer(),
-          finalUnclaimed, finalExpired), 280L);
+      plugin.getMarketManager().updateMarketNotif(event.getPlayer());
+      Bukkit.getScheduler().runTaskLater(plugin, () ->
+          sendSpam(event.getPlayer(), finalUnclaimed, finalExpired), 280L);
     }
   }
 

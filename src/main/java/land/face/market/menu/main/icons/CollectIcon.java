@@ -58,7 +58,7 @@ public class CollectIcon extends MenuItem {
     if (marketManager.hasEarnings(player)) {
       icon.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
       icon.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-      ItemStackExtensionsKt.setCustomModelData(stack, 70);
+      ItemStackExtensionsKt.setCustomModelData(icon, 70);
       List<String> lore = new ArrayList<>(icon.getLore() == null ? new ArrayList<>() : icon.getLore());
       lore.add(StringExtensionsKt.chatColorize("&a&lCLICK TO COLLECT!"));
       icon.setLore(lore);

@@ -18,6 +18,7 @@
  */
 package land.face.market.menu.listings.icons;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.FaceColor;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.time.DurationFormatUtils;
 import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
@@ -119,7 +120,12 @@ public class ListingSlot extends MenuItem {
         new ArrayList<>() : listing.getItemStack().getLore());
     lore.add("");
     int msRemaining = (int) (listing.getListingTime() - System.currentTimeMillis());
-    String format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
+    String format;
+    if (msRemaining < 60000) {
+      format = FaceColor.RED + FaceColor.BOLD.s() + "VERY SOON!!";
+    } else {
+      format = DurationFormatUtils.formatDuration(msRemaining, "d'D' H'H' m'M'");
+    }
     lore.add(StringExtensionsKt.chatColorize(
         "&6Listing Price: &e" + plugin.getEconomy().format(listing.getPrice())));
     lore.add(StringExtensionsKt.chatColorize("&6Remaining Time: &b" + format));

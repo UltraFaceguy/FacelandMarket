@@ -158,10 +158,15 @@ public class FacelandMarketPlugin extends JavaPlugin {
     for (String listingId : listings.getKeys(false)) {
       ConfigurationSection listingSection = listings.getConfigurationSection(listingId);
       Listing listing = new Listing();
+      listing.setClaimed(listingSection.getBoolean("claimed", false));
+      if (listing.isClaimed()) {
+        continue;
+      }
       listing.setListingId(UUID.fromString(listingId));
       listing.setSellerName(listingSection.getString("seller-name"));
       listing.setSellerUuid(UUID.fromString(listingSection.getString("seller-uuid")));
       listing.setSold(listingSection.getBoolean("sold"));
+      listing.setClaimed(listingSection.getBoolean("claimed", false));
       listing.setExpired(listingSection.getBoolean("expired"));
       listing.setCategory(Category.valueOf(listingSection.getString("category")));
       listing.setFlagA(FilterFlagA.valueOf(listingSection.getString("flag-a")));
@@ -184,6 +189,7 @@ public class FacelandMarketPlugin extends JavaPlugin {
       listingsSection.set("seller-uuid", l.getSellerUuid().toString());
       listingsSection.set("seller-name", l.getSellerName());
       listingsSection.set("sold", l.isSold());
+      listingsSection.set("claimed", l.isClaimed());
       listingsSection.set("expired", l.isExpired());
       listingsSection.set("category", l.getCategory().toString());
       listingsSection.set("flag-a", l.getFlagA().toString());
